@@ -1,17 +1,293 @@
-import { useEffect,useState } from 'react';
-import { Download,Eye,Save,Trash2 } from 'lucide-react';
-import { adminData,deleteTestData,errorText,loadDraft,saveReport,reportStatus } from '../lib/api';
-import { choices } from '../data/survey';
-import { statusLabels } from '../lib/domain';
-import { Markdown } from '../components/Markdown';
-export function AdminPage(){
- const [data,setData]=useState<Awaited<ReturnType<typeof adminData>>|null>(null),[selected,setSelected]=useState(''),[markdown,setMarkdown]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[preview,setPreview]=useState(false),[deleting,setDeleting]=useState(false),[draftLoading,setDraftLoading]=useState(false),[draftReady,setDraftReady]=useState(false);
- async function refresh(){try{setData(await adminData());}catch(e){setMessage(errorText(e));}}
- useEffect(()=>{void refresh();},[]);
- const sub=data?.submissions.find(s=>s.id===selected),profile=data?.profiles.find(p=>p.id===sub?.user_id),version=data?.versions.find(v=>v.id===sub?.version_id);
- useEffect(()=>{setMarkdown('');setDeleting(false);setDraftReady(false);if(selected){setDraftLoading(true);let current=true;loadDraft(selected).then(x=>{if(current){setMarkdown(x);setDraftReady(true);}}).catch(e=>{if(current)setMessage('초안을 불러오지 못했어요. 다른 설문을 선택한 뒤 다시 시도해 주세요. '+errorText(e));}).finally(()=>{if(current)setDraftLoading(false);});return()=>{current=false;};}},[selected]);
- async function action(fn:()=>Promise<void>,msg:string){setBusy(true);setMessage('');try{await fn();await refresh();setMessage(msg);}catch(e){setMessage(errorText(e));}finally{setBusy(false);}}
- function download(){if(!sub)return;const record={exported_at:new Date().toISOString(),profile,submission:sub,survey:version,favorites:data?.favorites.filter(f=>f.user_id===sub.user_id)};const u=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download=`career-response-${sub.id}.json`;a.click();URL.revokeObjectURL(u);}
- return <><div className="page-heading"><p className="eyebrow">ADMIN · 수동 검토</p><h1>이야기를 읽고, 함께 정리하기.</h1><p>원문과 해석을 구분하고, 검토한 보고서만 게시해 주세요.</p></div>{message&&<div className="notice" role="status">{message}</div>}<div className="admin-layout"><aside className="panel"><h2>제출된 설문</h2>{!data?<p>불러오는 중…</p>:!data.submissions.length?<p>아직 제출된 설문이 없어요.</p>:data.submissions.map(s=><button className={'submission-item '+(s.id===selected?'active':'')} key={s.id} disabled={busy} onClick={()=>setSelected(s.id)}><strong>{data.profiles.find(p=>p.id===s.user_id)?.nickname??'사용자'} {data.profiles.find(p=>p.id===s.user_id)?.is_test?'[테스트]':''}</strong><small>{statusLabels[s.status]}</small><small>{new Date(s.submitted_at!).toLocaleString('ko-KR')}</small></button>)}</aside>{sub?<section className="panel"><div className="section-heading"><h2>{profile?.nickname}의 이야기</h2><button onClick={download}><Download size={16}/>JSON 내보내기</button></div><p className="badge">{sub.version_id} · {statusLabels[sub.status]}</p><details><summary>객관식 응답과 서술형 원문 보기</summary>{version?.questions.map(q=><div className="response" key={q.id}><strong>{q.text}</strong><p>{q.kind==='scale'?choices.find(c=>c.value===sub.answers[q.id])?.label??'미응답':String(sub.answers[q.id]??'')||'(공란)'}</p></div>)}</details><details><summary>관심 학교·학과와 선택 이유</summary>{data?.favorites.filter(f=>f.user_id===sub.user_id).map(f=><p key={f.school_id+f.target_id}>{f.school_id} / {f.department_id??'학교 전체'} — {f.note||'이유 미작성'}</p>)}</details><div className="section-heading"><h3>분석 보고서 초안</h3><button onClick={()=>setPreview(!preview)}><Eye size={16}/>{preview?'편집':'미리보기'}</button></div>{preview?<Markdown text={markdown}/>:<textarea disabled={!draftReady||busy} className="report-editor" aria-label="분석 결과 Markdown" value={markdown} maxLength={100000} onChange={e=>setMarkdown(e.target.value)} placeholder={'# 함께 살펴본 이야기\n\n## 관심과 경험\n\n## 아직 확인할 점\n\n## 학교·학과의 장점과 고려사항\n\n## 다음에 경험해 볼 활동\n\n## 스스로 생각해 볼 질문'}/>}
- {draftLoading&&<p role="status">초안을 불러오는 중…</p>}<div className="admin-actions"><button disabled={busy||!draftReady} onClick={()=>action(()=>saveReport(sub.id,markdown),'보고서 초안을 저장했어요. 게시 전에는 학생에게 보이지 않아요.')}><Save size={16}/>초안 저장</button><button disabled={busy} onClick={()=>action(()=>reportStatus(sub.id,'review'),'검토 중으로 변경하고 게시본을 내렸어요.')}>검토 중</button><button className="primary" disabled={busy||!draftReady||!markdown.trim()} onClick={()=>action(async()=>{await saveReport(sub.id,markdown);await reportStatus(sub.id,'publish');},'검토한 결과를 게시했어요.')}>저장 후 게시</button><button disabled={busy||sub.status!=='published'} onClick={()=>action(()=>reportStatus(sub.id,'unpublish'),'게시를 취소했어요.')}>게시 취소</button></div><p className="privacy-note">내보낸 JSON은 미성년자의 응답 원문을 포함해요. 비공개로 관리하고 공개 저장소에 올리지 마세요.</p>{profile?.is_test&&<div className="danger-zone"><button disabled={busy} onClick={()=>setDeleting(!deleting)}><Trash2 size={16}/>테스트 응답 삭제</button>{deleting&&<><p>이 테스트 사용자의 모든 설문·보고서·관심 정보를 삭제해요. 인증 계정은 유지돼요.</p><button className="danger" disabled={busy} onClick={()=>action(async()=>{await deleteTestData(sub.user_id);setSelected('');},'테스트 데이터를 삭제했어요.')}>테스트 데이터 삭제 확인</button></>}</div>}</section>:<section className="panel centered"><h2>검토할 설문을 선택해 주세요.</h2><p>자동 분석은 실행하지 않습니다.</p></section>}</div></>;
+import { useEffect, useState } from "react";
+import { Download, Eye, Save, Trash2 } from "lucide-react";
+import {
+  adminData,
+  deleteTestData,
+  errorText,
+  loadDraft,
+  saveReport,
+  reportStatus,
+} from "../lib/api";
+import { choices } from "../data/survey";
+import { statusLabels } from "../lib/domain";
+import { Markdown } from "../components/Markdown";
+export function AdminPage() {
+  const [data, setData] = useState<Awaited<
+      ReturnType<typeof adminData>
+    > | null>(null),
+    [selected, setSelected] = useState(""),
+    [markdown, setMarkdown] = useState(""),
+    [busy, setBusy] = useState(false),
+    [message, setMessage] = useState(""),
+    [preview, setPreview] = useState(false),
+    [deleting, setDeleting] = useState(false),
+    [draftLoading, setDraftLoading] = useState(false),
+    [draftReady, setDraftReady] = useState(false);
+  async function refresh() {
+    try {
+      setData(await adminData());
+    } catch (e) {
+      setMessage(errorText(e));
+    }
+  }
+  useEffect(() => {
+    void refresh();
+  }, []);
+  const sub = data?.submissions.find((s) => s.id === selected),
+    profile = data?.profiles.find((p) => p.id === sub?.user_id),
+    version = data?.versions.find((v) => v.id === sub?.version_id);
+  useEffect(() => {
+    setMarkdown("");
+    setDeleting(false);
+    setDraftReady(false);
+    if (selected) {
+      setDraftLoading(true);
+      let current = true;
+      loadDraft(selected)
+        .then((x) => {
+          if (current) {
+            setMarkdown(x);
+            setDraftReady(true);
+          }
+        })
+        .catch((e) => {
+          if (current)
+            setMessage(
+              "초안을 불러오지 못했어요. 다른 설문을 선택한 뒤 다시 시도해 주세요. " +
+                errorText(e),
+            );
+        })
+        .finally(() => {
+          if (current) setDraftLoading(false);
+        });
+      return () => {
+        current = false;
+      };
+    }
+  }, [selected]);
+  async function action(fn: () => Promise<void>, msg: string) {
+    setBusy(true);
+    setMessage("");
+    try {
+      await fn();
+      await refresh();
+      setMessage(msg);
+    } catch (e) {
+      setMessage(errorText(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+  function download() {
+    if (!sub) return;
+    const record = {
+      exported_at: new Date().toISOString(),
+      profile,
+      submission: sub,
+      survey: version,
+      favorites: data?.favorites.filter((f) => f.user_id === sub.user_id),
+    };
+    const u = URL.createObjectURL(
+      new Blob([JSON.stringify(record, null, 2)], { type: "application/json" }),
+    );
+    const a = document.createElement("a");
+    a.href = u;
+    a.download = `career-response-${sub.id}.json`;
+    a.click();
+    URL.revokeObjectURL(u);
+  }
+  return (
+    <>
+      <div className="page-heading">
+        <p className="eyebrow">ADMIN · 수동 검토</p>
+        <h1>이야기를 읽고, 함께 정리하기.</h1>
+        <p>원문과 해석을 구분하고, 검토한 보고서만 게시해 주세요.</p>
+      </div>
+      {message && (
+        <div className="notice" role="status">
+          {message}
+        </div>
+      )}
+      <div className="admin-layout">
+        <aside className="panel">
+          <h2>제출된 설문</h2>
+          {!data ? (
+            <p>불러오는 중…</p>
+          ) : !data.submissions.length ? (
+            <p>아직 제출된 설문이 없어요.</p>
+          ) : (
+            data.submissions.map((s) => (
+              <button
+                className={
+                  "submission-item " + (s.id === selected ? "active" : "")
+                }
+                key={s.id}
+                disabled={busy}
+                onClick={() => setSelected(s.id)}
+              >
+                <strong>
+                  {data.profiles.find((p) => p.id === s.user_id)?.nickname ??
+                    "사용자"}{" "}
+                  {data.profiles.find((p) => p.id === s.user_id)?.is_test
+                    ? "[테스트]"
+                    : ""}
+                </strong>
+                <small>{statusLabels[s.status]}</small>
+                <small>
+                  {new Date(s.submitted_at!).toLocaleString("ko-KR")}
+                </small>
+              </button>
+            ))
+          )}
+        </aside>
+        {sub ? (
+          <section className="panel">
+            <div className="section-heading">
+              <h2>{profile?.nickname}의 이야기</h2>
+              <button onClick={download}>
+                <Download size={16} />
+                JSON 내보내기
+              </button>
+            </div>
+            <p className="badge">
+              {sub.version_id} · {statusLabels[sub.status]}
+            </p>
+            <details>
+              <summary>객관식 응답과 서술형 원문 보기</summary>
+              {version?.questions.map((q) => (
+                <div className="response" key={q.id}>
+                  <strong>{q.text}</strong>
+                  <p>
+                    {q.kind === "scale"
+                      ? (choices.find((c) => c.value === sub.answers[q.id])
+                          ?.label ?? "미응답")
+                      : String(sub.answers[q.id] ?? "") || "(공란)"}
+                  </p>
+                </div>
+              ))}
+            </details>
+            <details>
+              <summary>관심 학교·학과와 선택 이유</summary>
+              {data?.favorites
+                .filter((f) => f.user_id === sub.user_id)
+                .map((f) => (
+                  <p key={f.school_id + f.target_id}>
+                    {f.school_id} / {f.department_id ?? "학교 전체"} —{" "}
+                    {f.note || "이유 미작성"}
+                  </p>
+                ))}
+            </details>
+            <div className="section-heading">
+              <h3>분석 보고서 초안</h3>
+              <button onClick={() => setPreview(!preview)}>
+                <Eye size={16} />
+                {preview ? "편집" : "미리보기"}
+              </button>
+            </div>
+            {preview ? (
+              <Markdown text={markdown} />
+            ) : (
+              <textarea
+                disabled={!draftReady || busy}
+                className="report-editor"
+                aria-label="분석 결과 Markdown"
+                value={markdown}
+                maxLength={100000}
+                onChange={(e) => setMarkdown(e.target.value)}
+                placeholder={
+                  "# 함께 살펴본 이야기\n\n## 관심과 경험\n\n## 아직 확인할 점\n\n## 학교·학과의 장점과 고려사항\n\n## 다음에 경험해 볼 활동\n\n## 스스로 생각해 볼 질문"
+                }
+              />
+            )}
+            {draftLoading && <p role="status">초안을 불러오는 중…</p>}
+            <div className="admin-actions">
+              <button
+                disabled={busy || !draftReady}
+                onClick={() =>
+                  action(
+                    () => saveReport(sub.id, markdown),
+                    "보고서 초안을 저장했어요. 게시 전에는 학생에게 보이지 않아요.",
+                  )
+                }
+              >
+                <Save size={16} />
+                초안 저장
+              </button>
+              <button
+                disabled={busy}
+                onClick={() =>
+                  action(
+                    () => reportStatus(sub.id, "review"),
+                    "검토 중으로 변경하고 게시본을 내렸어요.",
+                  )
+                }
+              >
+                검토 중
+              </button>
+              <button
+                className="primary"
+                disabled={busy || !draftReady || !markdown.trim()}
+                onClick={() =>
+                  action(async () => {
+                    await saveReport(sub.id, markdown);
+                    await reportStatus(sub.id, "publish");
+                  }, "검토한 결과를 게시했어요.")
+                }
+              >
+                저장 후 게시
+              </button>
+              <button
+                disabled={busy || sub.status !== "published"}
+                onClick={() =>
+                  action(
+                    () => reportStatus(sub.id, "unpublish"),
+                    "게시를 취소했어요.",
+                  )
+                }
+              >
+                게시 취소
+              </button>
+            </div>
+            <p className="privacy-note">
+              내보낸 JSON은 미성년자의 응답 원문을 포함해요. 비공개로 관리하고
+              공개 저장소에 올리지 마세요.
+            </p>
+            {profile?.is_test && (
+              <div className="danger-zone">
+                <button disabled={busy} onClick={() => setDeleting(!deleting)}>
+                  <Trash2 size={16} />
+                  테스트 응답 삭제
+                </button>
+                {deleting && (
+                  <>
+                    <p>
+                      이 테스트 사용자의 모든 설문·보고서·관심 정보를 삭제해요.
+                      인증 계정은 유지돼요.
+                    </p>
+                    <button
+                      className="danger"
+                      disabled={busy}
+                      onClick={() =>
+                        action(async () => {
+                          await deleteTestData(sub.user_id);
+                          setSelected("");
+                        }, "테스트 데이터를 삭제했어요.")
+                      }
+                    >
+                      테스트 데이터 삭제 확인
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+        ) : (
+          <section className="panel centered">
+            <h2>검토할 설문을 선택해 주세요.</h2>
+            <p>자동 분석은 실행하지 않습니다.</p>
+          </section>
+        )}
+      </div>
+    </>
+  );
 }
