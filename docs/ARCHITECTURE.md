@@ -25,7 +25,8 @@ DB RLS와 테이블 GRANT를 함께 사용한다. UI 관리자 메뉴는 편의 
 ## 트랜잭션 RPC
 
 - save_survey: 로그인 확인, 버전 행 공유잠금, 테스트/승인 확인, JSON 키·타입·객관식50/서술5 정의 검증, upsert. draft만 갱신, submitted_at은 서버 시간. 동일 최종 답변 재제출은 멱등 처리, 다른 답변·draft 저장으로 덮어쓰기 불가.
-- set_report_status: DB 관리자 검증과 제출 행 잠금. publish는 초안→게시본 복사와 상태 갱신을 원자적으로 처리한다. 수정된 초안은 재게시 전 학생에게 보이지 않는다. unpublish/review는 게시본 삭제와 under_review 갱신.
+- publish_report: DB 관리자 검증과 제출 행 잠금 후 요청자가 검토한 Markdown 본문을 초안과 게시본에 저장하고 published로 갱신하는 단일 트랜잭션. 다른 탭이 저장한 초안을 잘못 게시하지 않는다.
+- set_report_status: unpublish/review만 허용하며 게시본 삭제와 under_review 갱신. 구 publish 요청은 새 편집 화면 사용을 안내하며 거부한다.
 - delete_test_data: 관리자+대상 is_test 검증. 설문/연쇄보고서/관심 제거. Auth 계정과 테스트 플래그는 유지해 재검증 가능.
 
 최초 응답 이후 survey_versions 수정·삭제는 트리거로 차단한다. 새 버전 ID로 승인 문항을 등록해야 한다. 이전 응답은 FK로 원래 문항을 유지한다. 서비스 역할은 서버 전용이며 원칙적으로 DB SQL Editor에서만 초기화한다.

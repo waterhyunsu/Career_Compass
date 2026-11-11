@@ -1,16 +1,31 @@
 // Real PostgreSQL semantics in PGlite. Supabase auth.uid is emulated; hosted JWT tests are separate.
 import { PGlite } from "@electric-sql/pglite";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import assert from "node:assert/strict";
 const db = new PGlite();
 await db.exec(
   `create role anon; create role authenticated; alter default privileges in schema public grant all on tables to anon,authenticated; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`,
 );
-await db.exec(
-  await readFile(
-    new URL("../supabase/migrations/202611110001_initial.sql", import.meta.url),
-    "utf8",
-  ),
+for (const file of (
+  await readdir(new URL("../supabase/migrations/", import.meta.url))
+)
+  .filter((f) => f.endsWith(".sql"))
+  .sort()) {
+  await db.exec(
+    await readFile(
+      new URL("../supabase/migrations/" + file, import.meta.url),
+      "utf8",
+    ),
+  );
+}
+assert.equal(
+  (
+    await db.query(
+      "select count(*)::int n from public.survey_versions where id='approved-2026-11-11-v2' and approved and jsonb_array_length(questions)=55",
+    )
+  ).rows[0].n,
+  1,
+  "approved questionnaire must come from migrations before seed",
 );
 await db.exec(
   await readFile(new URL("../supabase/seed.sql", import.meta.url), "utf8"),
@@ -180,7 +195,7 @@ await asUser(ids[0], async () => {
   );
 });
 await asUser(ids[2], () =>
-  db.query("select public.set_report_status($1,'publish')", [submission]),
+  db.query("select public.publish_report($1,'first')", [submission]),
 );
 await asUser(ids[0], async () =>
   assert.equal(
@@ -215,12 +230,46 @@ await asUser(ids[0], async () =>
     0,
   ),
 );
+await asUser(ids[0], () =>
+  rejected(
+    () =>
+      db.query("select public.publish_report($1,'forbidden')", [submission]),
+    /Administrator/,
+  ),
+);
+await asUser(ids[2], async () => {
+  // Tab A reviewed this body; tab B then saved a different private revision.
+  const reviewed = "reviewed in tab A";
+  await db.query(
+    "update public.report_drafts set markdown='unreviewed tab B' where submission_id=$1",
+    [submission],
+  );
+  await rejected(
+    () => db.query("select public.publish_report($1,'   ')", [submission]),
+    /Report required/,
+  );
+  await db.query("select public.publish_report($1,$2)", [submission, reviewed]);
+});
+await asUser(ids[0], async () =>
+  assert.equal(
+    (await db.query("select markdown from public.published_reports")).rows[0]
+      .markdown,
+    "reviewed in tab A",
+  ),
+);
 await asUser(ids[2], async () => {
   await rejected(
     () => db.query("select public.delete_test_data($1)", [ids[1]]),
     /Only test/,
   );
-  await db.query("select public.set_report_status($1,'publish')", [submission]);
+  await rejected(
+    () =>
+      db.query("select public.set_report_status($1,'publish')", [submission]),
+    /publish_report/,
+  );
+  await db.query("select public.publish_report($1,'private revision')", [
+    submission,
+  ]);
   await db.query("select public.delete_test_data($1)", [ids[0]]);
   assert.equal(
     (await db.query("select * from public.published_reports")).rows.length,
@@ -229,5 +278,5 @@ await asUser(ids[2], async () => {
 });
 await db.close();
 console.log(
-  "PASS: PostgreSQL RLS isolation, approval gate, unknown, immutability, duplicate submit, draft secrecy, publication snapshot, unpublish, test-only cascade deletion",
+  "PASS: ordered migrations, atomic reviewed-body publish, legacy publish rejection, PostgreSQL RLS isolation, approval gate, unknown, immutability, duplicate submit, draft secrecy, publication snapshot, unpublish, test-only cascade deletion",
 );

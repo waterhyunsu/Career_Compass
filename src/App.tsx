@@ -58,10 +58,12 @@ export default function App() {
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [authBusy, setAuthBusy] = useState(false),
+    [saving, setSaving] = useState(false),
     [mobileMenu, setMobileMenu] = useState(false),
     [loadError, setLoadError] = useState(false);
   const preview = !supabase,
-    sessionGate = useRef(new SessionGate());
+    sessionGate = useRef(new SessionGate()),
+    pendingSave = useRef<number | null>(null);
   useEffect(() => {
     const onHash = () => {
       setRoute(location.hash.slice(1) || "home");
@@ -83,6 +85,8 @@ export default function App() {
     setAnswers({});
     setFavorites([]);
     setReport(undefined);
+    setSaving(false);
+    pendingSave.current = null;
     try {
       if (next) {
         const [p, a, s, f] = await Promise.all([
@@ -164,11 +168,14 @@ export default function App() {
   }
   async function save(submit: boolean) {
     const epoch = sessionGate.current.token();
+    if (pendingSave.current === epoch) return false;
     const errors = validateAnswers(survey, answers, submit);
     if (errors.length) {
       setToast(errors[0]);
       return false;
     }
+    pendingSave.current = epoch;
+    setSaving(true);
     try {
       if (preview) {
         localStorage.setItem(
@@ -191,6 +198,11 @@ export default function App() {
       if (sessionGate.current.current(epoch))
         setToast("저장하지 못했어요. " + errorText(e));
       return false;
+    } finally {
+      if (sessionGate.current.current(epoch)) {
+        pendingSave.current = null;
+        setSaving(false);
+      }
     }
   }
   async function favorite(
@@ -241,6 +253,7 @@ export default function App() {
         setToast("저장하지 못했어요. " + errorText(e));
     }
   }
+  const hasSubmitted = Boolean(submission && submission.status !== "draft");
   const protectedRoute = ["survey", "result", "favorites", "admin"].includes(
       route,
     ),
@@ -345,6 +358,7 @@ export default function App() {
             submission={submission}
             isTest={profile?.is_test ?? true}
             preview={preview}
+            saving={saving}
             onSave={save}
           />
         ) : route === "schools" || route === "favorites" ? (
@@ -357,7 +371,7 @@ export default function App() {
         ) : route === "result" ? (
           <section className="panel result-panel">
             <p className="eyebrow">STEP 03 · 나의 방향</p>
-            {user && (
+            {user && hasSubmitted && (
               <button onClick={() => sync(user, true)}>
                 결과 다시 불러오기
               </button>
@@ -365,8 +379,8 @@ export default function App() {
             <h1>
               {report
                 ? "함께 살펴본, 너의 이야기"
-                : submission
-                  ? statusLabels[submission.status]
+                : hasSubmitted
+                  ? statusLabels[submission!.status]
                   : "아직 쓰이지 않은 너의 다음 장."}
             </h1>
             {report ? (
@@ -377,17 +391,21 @@ export default function App() {
                   <BookOpen size={30} />
                 </span>
                 <p>
-                  {submission
+                  {hasSubmitted
                     ? "형이 답변을 살펴보고 검토한 결과를 이곳에 올려 줄 거야."
                     : "네 생각을 들려주면, 형이 차근차근 읽고 함께 정리해 줄 거야."}
                   <br />
                   특정 학교가 정답이라고 정해 주지 않아.
                 </p>
                 <a
-                  href={submission ? "#schools" : "#survey"}
+                  href={hasSubmitted ? "#schools" : "#survey"}
                   className="button primary"
                 >
-                  {submission ? "학교 둘러보기" : "나를 알아보기"}
+                  {hasSubmitted
+                    ? "학교 둘러보기"
+                    : submission
+                      ? "설문 이어쓰기"
+                      : "나를 알아보기"}
                   <ArrowRight size={16} />
                 </a>
               </>

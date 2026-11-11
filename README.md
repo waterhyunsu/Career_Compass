@@ -21,7 +21,7 @@ pnpm build
 ## 실제 서비스 설정
 
 1. Supabase 프로젝트를 준비합니다. Auth의 공개 가입을 끄고 이메일·비밀번호 방식으로 학생/형/테스트 계정을 생성합니다. 닉네임은 인증 정보가 아닙니다.
-2. SQL Editor에서 supabase/migrations/202611110001_initial.sql을 실행하고 supabase/seed.sql을 실행합니다. 기존 프로젝트에 무작정 재실행하지 말고 마이그레이션 이력을 관리하세요.
+2. SQL Editor에서 supabase/migrations/의 모든 SQL 파일을 파일명 순서대로 실행하고 supabase/seed.sql을 실행합니다. 기존 프로젝트에 무작정 재실행하지 말고 마이그레이션 이력을 관리하세요.
 3. 아래 SQL의 UUID를 실제 Auth 계정 ID로 치환합니다. 학생 계정은 기본 is_test=false를 유지합니다.
 
 ```sql

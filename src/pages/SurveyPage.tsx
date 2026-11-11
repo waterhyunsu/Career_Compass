@@ -15,6 +15,7 @@ type Props = {
   submission: Submission | null;
   isTest: boolean;
   preview: boolean;
+  saving?: boolean;
   onSave: (submit: boolean) => Promise<boolean>;
 };
 export function SurveyPage({
@@ -24,11 +25,13 @@ export function SurveyPage({
   submission,
   isTest,
   preview,
+  saving = false,
   onSave,
 }: Props) {
   const [page, setPage] = useState(0),
-    [busy, setBusy] = useState(false),
+    [localBusy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const busy = saving || localBusy;
   const scale = survey.questions.filter((q) => q.kind === "scale"),
     texts = survey.questions.filter((q) => q.kind === "text");
   const pageCount = Math.ceil(scale.length / 5);
@@ -118,6 +121,7 @@ export function SurveyPage({
         {sections.map((s) => (
           <button
             key={s.id}
+            disabled={busy}
             className={scale[page * 5]?.section === s.id ? "active" : ""}
             onClick={() =>
               setPage(
@@ -135,6 +139,7 @@ export function SurveyPage({
           </button>
         ))}
         <button
+          disabled={busy}
           onClick={() => setPage(pageCount)}
           className={open ? "active" : ""}
         >
@@ -153,6 +158,7 @@ export function SurveyPage({
                 {i + 1}. {q.text}
               </span>
               <button
+                disabled={busy}
                 onClick={() =>
                   setPage(q.kind === "text" ? pageCount : Math.floor(i / 5))
                 }
@@ -178,6 +184,7 @@ export function SurveyPage({
               <label htmlFor={q.id}>{q.text}</label>
               <textarea
                 id={q.id}
+                disabled={busy}
                 maxLength={5000}
                 value={answers[q.id] ?? ""}
                 placeholder="떠오르는 만큼만 편하게 적어 줘."
@@ -207,6 +214,7 @@ export function SurveyPage({
                   >
                     <input
                       type="radio"
+                      disabled={busy}
                       name={q.id}
                       checked={answers[q.id] === c.value}
                       value={c.value}

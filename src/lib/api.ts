@@ -137,10 +137,15 @@ export async function saveReport(id: string, markdown: string) {
     }),
   );
 }
-export async function reportStatus(
-  id: string,
-  action: "publish" | "unpublish" | "review",
-) {
+export async function publishReport(id: string, markdown: string) {
+  unwrap(
+    await supabase!.rpc("publish_report", {
+      p_submission: id,
+      p_markdown: markdown,
+    }),
+  );
+}
+export async function reportStatus(id: string, action: "unpublish" | "review") {
   unwrap(
     await supabase!.rpc("set_report_status", {
       p_submission: id,

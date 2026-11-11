@@ -7,6 +7,7 @@ import {
   loadDraft,
   saveReport,
   reportStatus,
+  publishReport,
 } from "../lib/api";
 import { choices } from "../data/survey";
 import { statusLabels } from "../lib/domain";
@@ -228,10 +229,10 @@ export function AdminPage() {
                 className="primary"
                 disabled={busy || !draftReady || !markdown.trim()}
                 onClick={() =>
-                  action(async () => {
-                    await saveReport(sub.id, markdown);
-                    await reportStatus(sub.id, "publish");
-                  }, "검토한 결과를 게시했어요.")
+                  action(
+                    () => publishReport(sub.id, markdown),
+                    "검토한 결과를 게시했어요.",
+                  )
                 }
               >
                 저장 후 게시
