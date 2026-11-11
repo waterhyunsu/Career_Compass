@@ -39,9 +39,9 @@ src/data/survey.ts에서 새 ID로 문항을 작성하고 기초 조사와 편�
 
 ## 배포
 
-현재 GitHub 원격·Supabase·Vercel 자격 증명이 없어 실제 배포는 미실행입니다.
+GitHub 비공개 저장소: https://github.com/waterhyunsu/Career_Compass . Supabase·Vercel은 아직 연결하지 않아 실제 서비스 배포는 미실행입니다.
 
-- GitHub 비공개 저장소를 만들고 이 폴더의 원격으로 연결한 뒤 push합니다. `.gitignore`에서 USER_PROFILE.md/private/.env/work 제외를 유지합니다.
+- GitHub 비공개 저장소에 소스를 push한 상태입니다. `.gitignore`에서 USER_PROFILE.md/private/.env/work 제외를 유지합니다.
 - Vercel에서 GitHub 저장소를 가져오고 Framework Vite, build `pnpm build`, output `dist`로 설정합니다.
 - Vercel에 VITE_SUPABASE_URL 및 VITE_SUPABASE_PUBLISHABLE_KEY를 등록 후 배포합니다. 환경변수는 빌드 시 포함되므로 변경 후 재배포합니다.
 - HTTPS URL에서 테스트계정→설문→DB→학교 관심→관리자→게시→학생 결과→취소→재게시→테스트 삭제를 검증합니다.
