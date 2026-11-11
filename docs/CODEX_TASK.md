@@ -23,16 +23,21 @@
 - [ ] 기초 조사원문 수령·원문 보존·직접응답 기준 프로필 갱신
 - [ ] 문항 중복/편향 검토안 보고·형 승인·신규 approved 버전 등록
 - [ ] 학교 교육과정·진학취업프로그램/실적·통학 상세 최종 검증 (SCHOOLS 참고)
-- [ ] 실제 Supabase 프로젝트와 Auth계정 연결
-- [ ] 운영 HTTP RLS·인증·DB저장 전체 시나리오
+- [x] Supabase production 프로젝트, 비공개 가입 및 서버 관리자 역할 구성
+- [x] 운영 HTTP 인증·RLS·DB저장 시나리오 (Supabase API 및 브라우저 제출 검증; 관리자 UI 일부 제외)
 - [x] GitHub 비공개 Career_Compass 저장소 생성, SSH 원격 연결 및 첫 push (2026-11-11)
-- [ ] Vercel HTTPS 배포
+- [x] Vercel HTTPS production 배포
 - [ ] 휴대폰 모바일데이터 외부접속
-- [ ] 실제 응답에 대한 형의 수동분석과 게시
+- [ ] 기초 조사 답변 후 문항 승인 및 실제 응답 분석·게시
 
-## 연결에 필요한 항목
+## 운영 연결 (2026-11-11)
 
-GitHub 저장소/접근, Supabase 프로젝트(개설·SQL권한)와 공개키, Vercel 로그인/프로젝트. 실제 비밀키를 채팅·Git에 붙이지 말고 로컬 환경/대시보드에 설정한다. 서비스role 키는 프런트엔드에 필요하지 않다. 계정생성·인증이 필요한 경우 사용자가 직접 로그인한다.
+- GitHub private `waterhyunsu/Career_Compass`; `main` 배포 commit `9fac5ad` (개인정보 제거 후).
+- Supabase project `Career_Compass`, Singapore; schema/seed 적용, signup disabled, 4 synthetic auth fixtures provisioned.
+- Vercel production: https://career-compass-eight-iota.vercel.app/; public URL/key only.
+- Live synthetic scenario confirmed for sign-in, draft/resume, 50 required + 5 optional response submission, school/department favorites, RLS separation, manager-only report publishing snapshots and test-only cleanup. Browser used response submission and school-interest screens; manager operations were verified against the live Supabase API. Test response data removed.
+- Local `private/bootstrap-accounts.json` holds temporary fixture credentials; do not copy into Git or chat. Actual student account is not provisioned.
+- Remaining: set Supabase Auth Site URL/redirect allowlist to the production URL; visually verify manager JSON download/report UI; check external mobile-data access; update this record after Phase 2. No student response or report has been published.
 
 ## Phase2 이어가기
 
@@ -47,4 +52,4 @@ GitHub 저장소/접근, Supabase 프로젝트(개설·SQL권한)와 공개키, 
 
 ## GitHub 저장소
 
-https://github.com/waterhyunsu/Career_Compass (Private). 개인정보·원문·환경변수는 전체 Git 이력에서 제외 확인. Supabase/Vercel 계정 및 실제 배포는 아직 미완료.
+https://github.com/waterhyunsu/Career_Compass (Private). 미성년자 개인정보·원문·환경변수는 전체 Git 이력에서 제외 확인. 운영: https://career-compass-eight-iota.vercel.app/.

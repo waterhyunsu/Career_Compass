@@ -31,7 +31,7 @@ update public.profiles set nickname='탐험가' where id='STUDENT_AUTH_UUID';
 ```
 
 4. .env.example을 참고해 .env.local에 프로젝트 URL과 **공개 publishable 또는 anon 키**를 설정합니다. service_role/secret 키는 브라우저에 넣지 않습니다.
-5. 프로젝트 Auth URL을 로컬/실제 배포 URL에 맞춰 설정하고, 두 계정 RLS와 전체 시나리오를 확인합니다. private 스키마는 공개 API에 노출하지 않습니다.
+5. Supabase Auth URL 설정에서 Site URL을 배포 주소로 지정하고 허용 리디렉션 URL에도 배포 주소를 추가합니다. private 스키마는 공개 API에 노출하지 않습니다.
 
 ## 문항 변경
 
@@ -39,13 +39,13 @@ src/data/survey.ts에서 새 ID로 문항을 작성하고 기초 조사와 편�
 
 ## 배포
 
-GitHub 비공개 저장소: https://github.com/waterhyunsu/Career_Compass . Supabase·Vercel은 아직 연결하지 않아 실제 서비스 배포는 미실행입니다.
+GitHub 비공개 저장소: https://github.com/waterhyunsu/Career_Compass. 운영 배포: https://career-compass-eight-iota.vercel.app/. Supabase 프로젝트 URL과 Vercel 공개 환경변수를 연결하고 HTTPS production 배포를 확인했습니다.
 
 - GitHub 비공개 저장소에 소스를 push한 상태입니다. `.gitignore`에서 USER_PROFILE.md/private/.env/work 제외를 유지합니다.
-- Vercel에서 GitHub 저장소를 가져오고 Framework Vite, build `pnpm build`, output `dist`로 설정합니다.
-- Vercel에 VITE_SUPABASE_URL 및 VITE_SUPABASE_PUBLISHABLE_KEY를 등록 후 배포합니다. 환경변수는 빌드 시 포함되므로 변경 후 재배포합니다.
-- HTTPS URL에서 테스트계정→설문→DB→학교 관심→관리자→게시→학생 결과→취소→재게시→테스트 삭제를 검증합니다.
-- 휴대폰 Wi-Fi를 끄고 모바일 데이터에서 접속을 직접 확인합니다. 로컬390px 반응형 검증이 이 검증을 대신하지 않습니다.
+- Vercel production은 GitHub `main`과 연결되어 있습니다. build는 `pnpm build`, output은 `dist`입니다.
+- Vercel Production/Preview에는 `VITE_SUPABASE_URL`과 `VITE_SUPABASE_PUBLISHABLE_KEY`만 설정합니다. Secret/service-role 키는 로컬 운영 테스트 뒤 제거했으며 브라우저·Vercel·Git에 넣지 않습니다.
+- 운영 HTTPS에서 테스트 계정 로그인, 50+5 합성 응답 제출·DB 저장, 학교/학과 관심과 이유 저장, 분석 대기 상태를 확인했습니다. Supabase API에서 관리자 식별, 미승인 비공개, RLS 격리, JSON에 대응하는 저장 데이터, 보고서 초안·게시·취소·재게시 권한 및 테스트 전용 삭제를 검증했습니다. 합성 응답과 관심 데이터는 테스트 후 삭제했습니다.
+- Supabase Auth Site URL/허용 리디렉션 URL, 관리자 화면의 브라우저 기반 JSON 다운로드·보고서 조작, 실제 휴대전화 모바일 데이터 접속은 아직 직접 확인하지 않았습니다. 390px 로컬 검증이 이를 대신하지 않습니다.
 
 ## 개인정보
 
