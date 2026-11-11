@@ -2043,3 +2043,99 @@ summary {
     font-size: 12px;
   }
 }
+
+/* 학과 상세: 먼저 핵심을 보여주고 근거는 필요한 만큼 펼칩니다. */
+.career-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.career-overview > div {
+  background: #fff;
+  border: 1px solid #dce7da;
+  border-radius: 12px;
+  padding: 15px;
+  min-width: 0;
+}
+.career-overview > div:last-child {
+  grid-column: 1/-1;
+}
+.career-overview span {
+  display: block;
+  font-size: 12px;
+  color: #62776a;
+  margin-bottom: 5px;
+}
+.career-overview strong {
+  display: block;
+  color: #254c39;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.career-overview small {
+  display: block;
+  margin-top: 5px;
+  color: #68786c;
+}
+.career-overview p {
+  margin: 0;
+  color: #344c3d;
+  line-height: 1.6;
+}
+.career-overview-note {
+  font-size: 12px;
+  color: #5a6b60;
+  text-align: left;
+  line-height: 1.6;
+}
+.career-more-link {
+  display: inline-block;
+  color: #235c41;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin: 5px 0 16px;
+}
+.career-section {
+  border-top: 1px solid #d6e2d6;
+  padding: 0 2px;
+}
+.career-section > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #294d3c;
+  padding: 15px 0;
+  list-style: none;
+}
+.career-section > summary::after {
+  content: "+";
+  float: right;
+  font-size: 20px;
+  line-height: 1;
+}
+.career-section[open] > summary::after {
+  content: "−";
+}
+.career-section > p,
+.career-section > ul,
+.career-section > .source-links,
+.career-section > .career-market-grid,
+.career-section > .career-role {
+  margin-bottom: 14px;
+}
+.career-content .privacy-note {
+  text-align: left;
+  color: #617367;
+}
+@media (max-width: 600px) {
+  .career-overview {
+    grid-template-columns: 1fr;
+  }
+  .career-overview > div:last-child {
+    grid-column: auto;
+  }
+  .career-overview > div {
+    padding: 13px;
+  }
+}
