@@ -17,6 +17,7 @@ const careerDetails = (id) => {
         checkedAt: careers.checkedAt,
         notice: careers.notice,
         salaryNotice: careers.salaryNotice,
+        comparison: careers.comparison,
       }
     : null;
 };

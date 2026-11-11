@@ -46,6 +46,22 @@ assert.equal(
   ).rows[0].n,
   9,
 );
+assert.equal(
+  (
+    await db.query(
+      "select sum(jsonb_array_length(details->'career'->'roles'))::int n from public.departments where details ? 'career'",
+    )
+  ).rows[0].n,
+  19,
+);
+assert.equal(
+  (
+    await db.query(
+      "select count(*)::int n from public.departments where details->'career'->'comparison'->>'benchmarkLabel'='수집 공고 시작액 평균'",
+    )
+  ).rows[0].n,
+  9,
+);
 await db.exec("set role anon");
 assert.equal((await db.query("select * from public.schools")).rows.length, 11);
 await assert.rejects(

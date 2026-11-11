@@ -290,3 +290,22 @@
 ## 유지보수
 
 원본은 `src/data/career-pathways.json`이다. 자료 수정 후 `pnpm seed:generate`로 `supabase/seed.sql`과 `supabase/career-seed.sql`을 생성한다. 기존 마이그레이션을 수정하지 않고 새 마이그레이션 또는 검토한 career-seed SQL로 운영 DB에 반영한다. 프런트는 GitHub main push 후 Vercel 자동 배포한다. 새 졸업 연도의 임금과 모집학과는 다시 조사한다.
+
+## 학과·직무 비교 화면 (2026-11-12)
+
+`#careers`는 두 학교9학과 비교표와19개 직무 카드를 제공한다. 모바일에서는 같은 비교 정보를 학과 카드로 보여준다. 학교·직무 검색과 상세 진입·비교표 복귀를 제공하며 설문 데이터와 무관한 공개 자료다.
+
+급여 기준은 중복 제거15개 공고 시작액의 단순평균 **연2,848.27만원(표시는 약2,848만원)**. 학과는 연환산 시작액의 최솟값, 직무는 해당 직무에 직접 연결된 공고의 시작액 최솟값을 비교한다. `(시작액/표본평균−1)×100`을 소수1자리로 표시한다. 지역·직무·계약기간이 섞인 비대표 표본으로 전국 평균, 직무 평균 또는 추천 순위를 뜻하지 않는다. 같은 연도·학력·신입·근무시간의 최신 전국 평균을 확보하지 못해 전국 평균 대비 수치를 생성하지 않았다.
+
+직무별 salarySourceIds가 비어 있으면 급여 미확인으로 표시한다. 학과 급여를 다른 직무에 전가하지 않는다. 현재 토목CAD, 실내시공, 전기시설유지보수, CNC가공, 세무사무소, 독립 테스트·운영, 식음서비스, 바리스타8개 직무는 직접 대응하는 급여가 미확인이다. 호텔 예약·프런트는 기존 공고의 실제 업무와 맞추어 세 번째 관광 직무로 분리했다.
+
+모든 직무에 essentialSkills, workEnvironment, english.use/practice, nextStep을 추가했다. 역량과 영어 예시는 학습 제안이며 모든 기업의 필수조건 또는 영어 임금 프리미엄을 뜻하지 않는다. 안전·수리·기록·소통·직무실력을 함께 다룬다. 해외 취업과 워킹홀리데이는 장래에 국가별 조건을 확인하는 선택지로 안내한다.
+
+공통 참고 출처(확인2026-11-12):
+
+- [월드잡 해외취업 FAQ](https://aseanjobfair.worldjob.or.kr/mlrd/bbs/faq/list.do?menuId=1000006335&showItemListCount=50): 현지 언어·영어와 회사별 경력·자격 조건.
+- [월드잡 기능인재 전용관](https://www.worldjob.or.kr/youthTalent/main.do?menuId=1000006556): 조리 등 기능직 해외 준비 경로.
+- [워킹홀리데이 인포센터](https://whic.mofa.go.kr/contents.do?contentsNo=3): 국가별 신청·연령·체류·취업조건.
+- [월드잡 해외취업아카데미](https://www.worldjob.or.kr/recruit/academyListAjax.do): 직무별 어학·이력서 등 준비.
+
+기존 migration004는 유지하고 migration005가 details.career만 갱신한다. comparison 공통 출처/기준도 DB에 함께 저장한다. source JSON 수정 후 생성 SQL을 다시 만들되 이미 배포한 migration을 덮어쓰지 않고 새 migration으로 관리한다.

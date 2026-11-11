@@ -1818,3 +1818,228 @@ summary {
     padding: 0.75rem;
   }
 }
+
+/* Public department / role comparison */
+.career-compare-entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: #e9f2e7;
+  border: 1px solid #cadcc6;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin: 20px 0;
+  color: #2c5541;
+}
+.career-compare-entry span {
+  font-size: 13px;
+}
+.career-comparison .panel {
+  margin: 22px 0;
+  padding: 26px;
+}
+.career-comparison h2 {
+  font-size: 22px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+.career-comparison h3 {
+  font-size: 16px;
+  margin: 20px 0 8px;
+}
+.career-comparison h4 {
+  font-size: 14px;
+  margin: 16px 0 6px;
+}
+.comparison-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.comparison-link {
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.comparison-controls {
+  display: flex;
+  gap: 18px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin: 28px 0 18px;
+}
+.comparison-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  flex: 1;
+  min-width: 180px;
+}
+.comparison-controls input,
+.comparison-controls select {
+  font: inherit;
+  background: white;
+  border: 1px solid #cdd8ce;
+  border-radius: 10px;
+  padding: 12px;
+  color: inherit;
+  width: 100%;
+}
+.comparison-table-wrap {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #dce5da;
+  border-radius: 14px;
+}
+.career-table {
+  width: 100%;
+  min-width: 1060px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.career-table caption {
+  text-align: left;
+  padding: 18px;
+  font-weight: 600;
+  background: #f1f5ec;
+}
+.career-table th,
+.career-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 18px 15px;
+  border-bottom: 1px solid #e3e9e0;
+  line-height: 1.7;
+}
+.career-table thead th {
+  background: #edf3e8;
+  font-size: 12px;
+}
+.career-table tbody th {
+  min-width: 150px;
+  background: #f8faf5;
+}
+.career-table td:nth-child(2) {
+  min-width: 165px;
+}
+.career-table td:nth-child(3) {
+  min-width: 160px;
+}
+.career-table td:nth-child(4) {
+  min-width: 130px;
+}
+.career-table td:nth-child(5) {
+  min-width: 230px;
+}
+.career-table td:nth-child(6) {
+  min-width: 230px;
+}
+.career-table small {
+  display: block;
+  color: #607367;
+  font-weight: 400;
+  font-size: 12px;
+  margin: 8px 0;
+}
+.career-table button {
+  font-size: 13px;
+  padding: 7px 10px;
+  text-align: left;
+}
+.career-table tbody th button {
+  background: #fff;
+  font-weight: 600;
+}
+.comparison-mobile-cards {
+  display: none;
+}
+.comparison-back {
+  margin: 0 0 8px;
+}
+.role-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+.role-detail-grid .panel {
+  margin: 0;
+}
+.role-detail p,
+.comparison-method p {
+  overflow-wrap: anywhere;
+}
+.role-detail ul {
+  padding-left: 20px;
+}
+.role-pay {
+  background: #f5f3e9;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+.role-pay strong {
+  font-size: 19px;
+}
+.role-pay-sample {
+  border-top: 1px solid #dcdcca;
+  margin-top: 16px;
+  padding-top: 10px;
+  font-size: 13px;
+}
+.english-highlight {
+  background: #eef5ef;
+  border: 1px solid #cddfcf;
+  border-radius: 12px;
+  padding: 18px;
+  margin: 22px 0;
+}
+.english-highlight h3 {
+  margin-top: 0;
+}
+.career-comparison .privacy-note {
+  font-size: 12px;
+}
+.career-comparison .source-links a {
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .comparison-table-wrap {
+    display: none;
+  }
+  .comparison-mobile-cards {
+    display: block;
+  }
+  .comparison-intro {
+    display: block;
+  }
+  .comparison-controls {
+    gap: 12px;
+  }
+  .role-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .career-comparison .panel {
+    padding: 20px;
+  }
+  .career-comparison h2 {
+    font-size: 20px;
+  }
+  .career-compare-entry {
+    padding: 16px;
+  }
+}
+@media (min-width: 761px) and (max-width: 1150px) {
+  header nav {
+    gap: 12px;
+  }
+  header nav a {
+    font-size: 12px;
+  }
+}

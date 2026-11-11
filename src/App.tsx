@@ -13,6 +13,7 @@ import {
 import type { User } from "@supabase/supabase-js";
 import { Home } from "./pages/Home";
 import { SurveyPage } from "./pages/SurveyPage";
+import { CareerComparePage } from "./pages/CareerComparePage";
 import { SchoolsPage } from "./pages/SchoolsPage";
 import { AdminPage } from "./pages/AdminPage";
 import { Markdown } from "./components/Markdown";
@@ -274,6 +275,7 @@ export default function App() {
             { id: "home", label: "시작하기" },
             { id: "survey", label: "나를 알아보기" },
             { id: "schools", label: "학교 둘러보기" },
+            { id: "careers", label: "학과·직무 비교" },
             { id: "favorites", label: "관심 모아보기" },
             { id: "result", label: "나의 방향" },
           ].map((n) => (
@@ -368,6 +370,8 @@ export default function App() {
             onFavorite={favorite}
             onlySaved={route === "favorites"}
           />
+        ) : route === "careers" ? (
+          <CareerComparePage />
         ) : route === "result" ? (
           <section className="panel result-panel">
             <p className="eyebrow">STEP 03 · 나의 방향</p>

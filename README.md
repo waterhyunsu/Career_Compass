@@ -61,3 +61,5 @@ GitHub 비공개 저장소: https://github.com/waterhyunsu/Career_Compass. 운�
 - docs/TEST_PLAN.md / CODEX_TASK.md: 검증 및 인수인계
 
 학과별 직무·시장 흐름·2026 신입 공고 기반 초봉 자료와 갱신 방법: [CAREER_PATHWAYS](docs/CAREER_PATHWAYS.md). 충주공고4학과·충주상고5학과의 상세에서 확인할 수 있다.
+
+학과·직무 비교: `/#careers`에서 9학과 비교표와 19개 직무의 업무·급여·역량·영어 활용을 볼 수 있다. 급여 비교는 수집공고15건 시작액의 표본평균 기준이며 전국평균이 아니다.

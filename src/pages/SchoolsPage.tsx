@@ -84,6 +84,12 @@ export function SchoolsPage({
         2027학년도 공식 자료를 바탕으로 확인한 범위를 표시했어. 지원 자격과
         통학은 최종 확인이 필요해. 학교 순서는 추천 순위가 아니야.
       </div>
+      {!onlySaved && (
+        <a className="career-compare-entry" href="#careers">
+          <strong>충주공고·충주상고 학과·직무 비교 →</strong>
+          <span>9학과의 일·초봉·전망·영어 활용을 한눈에 살펴봐.</span>
+        </a>
+      )}
       <div className="school-guide">
         <div>
           <strong>일반고</strong>
