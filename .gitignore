@@ -14,3 +14,8 @@ playwright-report/
 test-results/
 
 *.tsbuildinfo
+# Private exports and local backups
+exports/
+backups/
+**/career-response-*.json
+**/survey-response-*.json
