@@ -9,6 +9,7 @@ import {
   Check,
 } from "lucide-react";
 import schools from "../data/schools.json";
+import { DepartmentCareer } from "../components/DepartmentCareer";
 import type { Favorite } from "../lib/api";
 export type School = (typeof schools)[number];
 export function SchoolsPage({
@@ -362,26 +363,29 @@ export function SchoolsPage({
             <h3>무엇을 배울까?</h3>
             <p>{detail.curriculum}</p>
             {detail.departments.map((d) => (
-              <div className="department-row" key={d.id}>
-                <div>
-                  <strong>
-                    {d.name}
-                    {d.capacity !== null ? ` · ${d.capacity}명` : ""}
-                  </strong>
-                  <p>{d.subjects}</p>
-                  <small>자격증: {d.certifications}</small>
-                  <p>{d.pathway}</p>
+              <div className="department-card" key={d.id}>
+                <div className="department-row">
+                  <div>
+                    <strong>
+                      {d.name}
+                      {d.capacity !== null ? ` · ${d.capacity}명` : ""}
+                    </strong>
+                    <p>{d.subjects}</p>
+                    <small>자격증: {d.certifications}</small>
+                    <p>{d.pathway}</p>
+                  </div>
+                  <button
+                    disabled={busy}
+                    aria-label={d.name + " 관심 저장"}
+                    onClick={() => favorite(detail.id, d.id)}
+                  >
+                    <Heart
+                      size={18}
+                      fill={has(detail.id, d.id) ? "currentColor" : "none"}
+                    />
+                  </button>
                 </div>
-                <button
-                  disabled={busy}
-                  aria-label={d.name + " 관심 저장"}
-                  onClick={() => favorite(detail.id, d.id)}
-                >
-                  <Heart
-                    size={18}
-                    fill={has(detail.id, d.id) ? "currentColor" : "none"}
-                  />
-                </button>
+                <DepartmentCareer departmentId={d.id} />
               </div>
             ))}
             <h3>어떤 길이 있을까?</h3>

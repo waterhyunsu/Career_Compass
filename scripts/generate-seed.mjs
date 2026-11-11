@@ -3,6 +3,23 @@ import { readFile, writeFile } from "node:fs/promises";
 const schools = JSON.parse(
   await readFile(new URL("../src/data/schools.json", import.meta.url), "utf8"),
 );
+const careers = JSON.parse(
+  await readFile(
+    new URL("../src/data/career-pathways.json", import.meta.url),
+    "utf8",
+  ),
+);
+const careerDetails = (id) => {
+  const entry = careers.departments.find((d) => d.departmentId === id);
+  return entry
+    ? {
+        ...entry,
+        checkedAt: careers.checkedAt,
+        notice: careers.notice,
+        salaryNotice: careers.salaryNotice,
+      }
+    : null;
+};
 const sql = (v) => "'" + String(v).replaceAll("'", "''") + "'";
 const json = (v) => sql(JSON.stringify(v)) + "::jsonb";
 let seed =
@@ -11,9 +28,22 @@ seed += `insert into public.survey_versions(id,title,approved,questions) values(
 for (const s of schools) {
   seed += `insert into public.schools(id,name,details) values(${sql(s.id)},${sql(s.name)},${json(s)}) on conflict(id) do update set name=excluded.name,details=excluded.details;\n`;
   for (const d of s.departments)
-    seed += `insert into public.departments(id,school_id,name,details) values(${sql(d.id)},${sql(s.id)},${sql(d.name)},${json(d)}) on conflict(id) do update set name=excluded.name,details=excluded.details;\n`;
+    seed += `insert into public.departments(id,school_id,name,details) values(${sql(d.id)},${sql(s.id)},${sql(d.name)},${json({ ...d, ...(careerDetails(d.id) ? { career: careerDetails(d.id) } : {}) })}) on conflict(id) do update set name=excluded.name,details=excluded.details;\n`;
 }
 await writeFile(new URL("../supabase/seed.sql", import.meta.url), seed);
+const careerSeed =
+  "-- Public department career reference data only; preserve other fields.\n" +
+  careers.departments
+    .map(
+      (d) =>
+        `update public.departments set details=jsonb_set(details,'{career}',${json(careerDetails(d.departmentId))},true) where id=${sql(d.departmentId)};`,
+    )
+    .join("\n") +
+  "\n";
+await writeFile(
+  new URL("../supabase/career-seed.sql", import.meta.url),
+  careerSeed,
+);
 await writeFile(
   new URL("../docs/SURVEY.md", import.meta.url),
   `# 설문 문항\n\n버전: ${survey.id}\n승인 여부: ${survey.approved ? "승인 완료" : "검토 중"}\n\n기초 조사 검토 후 사용자 승인을 받아 확정한 50+5문항이다. 기존 공유 대화의 문항을 복원한 자료가 아니다. 개인화 보고서는 별도의 수동 검토와 게시 절차를 거친다.\n\n## 응답 기준\n\n1 전혀 아니다 / 2 아닌 편이다 / 3 보통이다 / 4 그런 편이다 / 5 매우 그렇다 / unknown 모르겠다·경험이 없다. unknown은 점수 계산에서 제외하며 0점으로 바꾸지 않는다. 점수 합계로 적성·학교를 판정하지 않는다. 객관식은 최종 제출 전 모두 응답하되 unknown을 사용할 수 있다. 서술형은 선택이며 각각 최대 5000자.\n\n## 객관식 50문항\n\n` +

@@ -1731,3 +1731,90 @@ summary {
     scroll-behavior: auto !important;
   }
 }
+
+/* Career evidence stays next to each department and opens on demand. */
+.department-card {
+  border-bottom: 1px solid var(--line, #dce5df);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.department-card .department-row {
+  border-bottom: 0;
+  margin-bottom: 0.25rem;
+}
+.career-panel {
+  background: #f2f6f3;
+  border: 1px solid #dce5df;
+  border-radius: 12px;
+  margin-top: 0.75rem;
+}
+.career-panel > summary {
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  color: #244e43;
+}
+.career-content {
+  padding: 0 1rem 1rem;
+  overflow-wrap: anywhere;
+}
+.career-content h4 {
+  margin: 1.4rem 0 0.5rem;
+  font-size: 1rem;
+}
+.career-content ul {
+  padding-left: 1.25rem;
+}
+.career-content li {
+  margin-bottom: 0.4rem;
+  line-height: 1.7;
+}
+.career-role {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #dce5df;
+}
+.career-market-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.career-salary {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+.career-salary h4 {
+  margin-top: 0;
+}
+.salary-range {
+  color: #244e43;
+  font-size: 1.15rem;
+  font-weight: 750;
+}
+.career-evidence {
+  margin-top: 1rem;
+}
+.career-evidence > summary {
+  cursor: pointer;
+  font-weight: 650;
+  padding: 0.5rem 0;
+}
+.career-evidence article {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #dce5df;
+}
+.career-content .source-links {
+  gap: 0.4rem;
+}
+@media (max-width: 600px) {
+  .career-market-grid {
+    grid-template-columns: 1fr;
+  }
+  .career-content {
+    padding: 0 0.75rem 0.75rem;
+  }
+  .career-salary {
+    padding: 0.75rem;
+  }
+}

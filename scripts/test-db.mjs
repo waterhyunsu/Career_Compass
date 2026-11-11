@@ -38,6 +38,14 @@ assert.equal(
   (await db.query("select count(*)::int n from public.departments")).rows[0].n,
   22,
 );
+assert.equal(
+  (
+    await db.query(
+      "select count(*)::int n from public.departments where details->'career'->'salary'->>'basisYear'='2026'",
+    )
+  ).rows[0].n,
+  9,
+);
 await db.exec("set role anon");
 assert.equal((await db.query("select * from public.schools")).rows.length, 11);
 await assert.rejects(
