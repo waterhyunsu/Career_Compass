@@ -32,6 +32,7 @@ export function SchoolsPage({
     [includeUnavailable, setIncludeUnavailable] = useState(false),
     [busy, setBusy] = useState(false),
     [note, setNote] = useState("");
+  const noSavedSchools = onlySaved && favorites.length === 0;
   const has = (s: string, d: string | null = null) =>
     favorites.some((f) => f.school_id === s && f.department_id === d);
   const displayed = schools.filter(
@@ -218,11 +219,32 @@ export function SchoolsPage({
       {!displayed.length && (
         <div className="panel centered">
           <Heart />
-          <h2>아직 담아 둔 학교가 없어.</h2>
-          <p>학교를 둘러보고 마음이 가는 곳의 하트를 눌러 봐.</p>
-          <a className="button primary" href="#schools">
-            학교 둘러보기
-          </a>
+          <h2>
+            {noSavedSchools
+              ? "아직 담아 둔 학교가 없어."
+              : "조건에 맞는 학교가 없어."}
+          </h2>
+          <p>
+            {noSavedSchools
+              ? "학교를 둘러보고 마음이 가는 곳의 하트를 눌러 봐."
+              : "학교 이름이나 유형, 지원 조건 필터를 바꿔 봐."}
+          </p>
+          {noSavedSchools ? (
+            <a className="button primary" href="#schools">
+              학교 둘러보기
+            </a>
+          ) : (
+            <button
+              className="primary"
+              onClick={() => {
+                setQuery("");
+                setFilter("전체");
+                setIncludeUnavailable(onlySaved);
+              }}
+            >
+              검색·필터 초기화
+            </button>
+          )}
         </div>
       )}
       {comparison.length > 0 && (

@@ -2,6 +2,8 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { SchoolsPage } from "../src/pages/SchoolsPage";
+import schools from "../src/data/schools.json";
 import { SurveyPage } from "../src/pages/SurveyPage";
 import { survey } from "../src/data/survey";
 import App from "../src/App";
@@ -204,4 +206,28 @@ it("저장 실패 후 답변을 유지하고 같은 화면에서 재시도할 �
   expect(button("임시 저장").disabled).toBe(false);
   await click(button("임시 저장"));
   expect(host.textContent).toContain("DB에 임시 저장했어요.");
+});
+
+it("관심 학교가 필터에 가려진 경우 관심 목록이 비었다고 안내하지 않는다", async () => {
+  const school = schools.find((s) => s.maleEligibility === "불가")!;
+  await act(async () =>
+    root.render(
+      <SchoolsPage
+        onlySaved
+        favorites={[
+          {
+            user_id: "u",
+            school_id: school.id,
+            department_id: null,
+            target_id: "",
+            note: "",
+          },
+        ]}
+        onFavorite={async () => {}}
+      />,
+    ),
+  );
+  expect(host.textContent).toContain("조건에 맞는 학교가 없어.");
+  await click(button("검색·필터 초기화"));
+  expect(host.textContent).toContain(school.name);
 });
