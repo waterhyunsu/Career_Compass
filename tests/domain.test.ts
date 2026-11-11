@@ -40,8 +40,8 @@ describe("설문 계약", () => {
     );
   });
   it("최종 미확정 버전은 테스트 사용자만 제출한다", () => {
-    expect(canSubmit(survey, false)).toBe(false);
-    expect(canSubmit(survey, true)).toBe(true);
+    expect(canSubmit({ ...survey, approved: false }, false)).toBe(false);
+    expect(canSubmit({ ...survey, approved: false }, true)).toBe(true);
     expect(canSubmit({ ...survey, approved: true }, false)).toBe(true);
   });
 });
