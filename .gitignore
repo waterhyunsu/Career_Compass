@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+work/
+private/
+docs/USER_PROFILE.md
+**/*RAW_RESPONSE*
+*.local
+.DS_Store
+coverage/
+playwright-report/
+test-results/
+
+*.tsbuildinfo
