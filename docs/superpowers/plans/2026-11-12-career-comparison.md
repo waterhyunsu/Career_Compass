@@ -9,6 +9,10 @@
 - [x] RED: 공고 중복제거·월환산·미확인·필터·상세전환 검증 테스트.
 - [x] 구현: career comparison helpers/page+links+mobile CSS, seed/migration/docs.
 - [x] 검증: tests/build/DB/live DB 일치, 역할별 근거 연결 수동 검토.
-- [ ] 배포: commit/push, Vercel Ready 및 제공파일 동일 확인, 운영 비교/상세 화면 검증.
+- [x] 배포: commit/push, Vercel Ready 및 제공파일 동일 확인, 운영 비교/상세 화면 검증.
 
 Review focus: 없는 직무에 학과급여 전가 금지; 일부 상한 미확인; 표본평균 오해 방지; 학교 필터 후 선택 일관성; 모바일 정보 동등성.
+
+## 완료 근거
+
+2026-11-12: 자동 테스트25개, DB 전체 권한·버전·게시 검증 및 빌드 통과. 운영 DB 9학과19직무 및 비교기준 소스 일치, 기존 테스트 응답 유지 확인. 기능 커밋08c1fe6 push, Vercel Ready 및 배포 JS와 로컬 빌드 SHA256 동일. 브라우저에서9행 비교표와 조리 직무별 상세·급여·영어 표시 확인. 학교필터·상세복귀는 자동 테스트에서 검증. 모바일 카드 CSS 구현, 실제 휴대폰/모바일 데이터 접속은 미검증.
