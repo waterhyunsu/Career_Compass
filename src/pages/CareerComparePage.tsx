@@ -337,11 +337,14 @@ export function CareerComparePage() {
                   대비
                 </p>
                 <small>학과 공고 최저 시작액 기준 · 직무마다 다름</small>
-                <h3>시장·전망</h3>
-                <p>{d.market.summary}</p>
-                <h3>역량·영어</h3>
-                <p>{d.roles[0].essentialSkills[0]}</p>
-                <p>{d.roles[0].english.use}</p>
+                <details className="role-more mobile-comparison-more">
+                  <summary>시장 전망과 영어 활용</summary>
+                  <h3>시장·전망</h3>
+                  <p>{d.market.summary}</p>
+                  <h3>역량·영어</h3>
+                  <p>{d.roles[0].essentialSkills[0]}</p>
+                  <p>{d.roles[0].english.use}</p>
+                </details>
                 <button onClick={() => open(d.departmentId)}>
                   직무별 상세 보기 →
                 </button>
