@@ -134,8 +134,7 @@ export function CareerComparePage() {
                   <h3>실제로 하는 일</h3>
                   <p>{role.tasks}</p>
                   <p className="privacy-note">{role.entryNotes}</p>
-                  <h3>일하는 환경</h3>
-                  <p>{role.workEnvironment}</p>
+
                   <div className="role-pay">
                     <h3>초봉 연봉 수준 · 세전</h3>
                     <strong>{salarySummary(samples ?? [])}</strong>
@@ -151,29 +150,32 @@ export function CareerComparePage() {
                           해당 직무와 연결되는 공고 {samples.length}건. 2026
                           사례이며 직무 평균·미래 졸업 시점의 임금이 아니야.
                         </p>
-                        {samples.map((s) => (
-                          <div className="role-pay-sample" key={s.sourceId}>
-                            <p>
-                              {s.role} · {s.region} · {s.education} ·{" "}
-                              {s.experience}
-                            </p>
-                            <p>
-                              {s.payPeriod === "month" ? "월" : "연"}{" "}
-                              {money(s.minManwon)}
-                              {s.maxManwon === null
-                                ? "만원 이상"
-                                : s.maxManwon === s.minManwon
-                                  ? "만원"
-                                  : `~${money(s.maxManwon)}만원`}{" "}
-                              · 주 소정 {s.weeklyHours}시간 · {s.contract}
-                            </p>
-                            <small>{s.notes}</small>
-                            <References
-                              department={department}
-                              ids={[s.sourceId]}
-                            />
-                          </div>
-                        ))}
+                        <details className="role-more">
+                          <summary>채용 공고와 근무 조건 확인</summary>
+                          {samples.map((s) => (
+                            <div className="role-pay-sample" key={s.sourceId}>
+                              <p>
+                                {s.role} · {s.region} · {s.education} ·{" "}
+                                {s.experience}
+                              </p>
+                              <p>
+                                {s.payPeriod === "month" ? "월" : "연"}{" "}
+                                {money(s.minManwon)}
+                                {s.maxManwon === null
+                                  ? "만원 이상"
+                                  : s.maxManwon === s.minManwon
+                                    ? "만원"
+                                    : `~${money(s.maxManwon)}만원`}{" "}
+                                · 주 소정 {s.weeklyHours}시간 · {s.contract}
+                              </p>
+                              <small>{s.notes}</small>
+                              <References
+                                department={department}
+                                ids={[s.sourceId]}
+                              />
+                            </div>
+                          ))}
+                        </details>
                       </>
                     ) : (
                       <p>
@@ -183,20 +185,27 @@ export function CareerComparePage() {
                       </p>
                     )}
                   </div>
-                  <h3>기본으로 준비할 역량</h3>
-                  <ul>
-                    {role.essentialSkills.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
-                  <div className="english-highlight">
-                    <h3>영어 활용</h3>
-                    <p>{role.english.use}</p>
-                    <h4>작게 연습해 보기</h4>
-                    <p>{role.english.practice}</p>
-                  </div>
-                  <h3>더 배워 볼 경로</h3>
-                  <p>{role.nextStep}</p>
+                  <details className="role-more">
+                    <summary>근무환경과 준비할 역량</summary>
+                    <p>{role.workEnvironment}</p>
+                    <h3>기본으로 준비할 역량</h3>
+                    <ul>
+                      {role.essentialSkills.map((t) => (
+                        <li key={t}>{t}</li>
+                      ))}
+                    </ul>
+                    <h3>더 배워 볼 경로</h3>
+                    <p>{role.nextStep}</p>
+                  </details>
+                  <details className="role-more">
+                    <summary>영어 활용과 연습 방법</summary>
+                    <div className="english-highlight">
+                      <h3>영어 활용</h3>
+                      <p>{role.english.use}</p>
+                      <h4>작게 연습해 보기</h4>
+                      <p>{role.english.practice}</p>
+                    </div>
+                  </details>
                 </article>
               );
             })}
