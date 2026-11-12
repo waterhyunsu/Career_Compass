@@ -125,7 +125,7 @@ export function Home() {
       <aside className="reassurance">
         <span className="mini-flower">✳</span>
         <div>
-          <strong>학교를 대신 골라 주는 곳이 아니야.</strong>
+          <strong>너의 생각이 가장 중요해.</strong>
           <p>
             네 관심사와 경험, 실제 학교 정보를 함께 살펴보는 공간이야.
             <br className="desktop-break" />

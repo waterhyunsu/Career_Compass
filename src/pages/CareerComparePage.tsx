@@ -1,9 +1,13 @@
+import { interestQuestion } from "../lib/school-presentation";
+import { studentText } from "../lib/student-text";
 import { useState } from "react";
 import data from "../data/career-pathways.json";
 import schools from "../data/schools.json";
 import { DepartmentCareer } from "../components/DepartmentCareer";
 import {
   annualPay,
+  availableSamples,
+  salaryStart,
   collectedBenchmark,
   money,
   relativeStart,
@@ -29,7 +33,11 @@ function References({
         .filter((s) => ids.includes(s.id))
         .map((s) => (
           <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer">
-            {s.title} ↗
+            {s.title
+              .replace(": 진로 안내이며 취업 실적 아님", "")
+              .replace("(교육 적용연도 미표기)", "")
+              .trim()}{" "}
+            ↗
           </a>
         ))}
     </div>
@@ -69,7 +77,7 @@ export function CareerComparePage() {
         <p>
           {department
             ? title?.school
-            : "충주공고 4학과 · 충주상고 5학과 · 학교 순서는 추천 순위가 아니야."}
+            : "충주공고 4학과 · 충주상고 5학과의 배움과 진로를 살펴봐."}
         </p>
       </div>
       {department ? (
@@ -79,25 +87,26 @@ export function CareerComparePage() {
           </button>
           <div className="panel">
             <h2>학교가 안내한 진로</h2>
-            <p>{department.schoolGuidance}</p>
+            <p>{studentText(department.schoolGuidance)}</p>
+            {interestQuestion(department.departmentId) && (
+              <p className="interest-question">
+                생각해 볼 질문 · {interestQuestion(department.departmentId)}
+              </p>
+            )}
             <References
               department={department}
               ids={department.schoolSourceIds}
             />
-            <p className="privacy-note">
-              실제 학과별 취업 배치·졸업생 급여 실적은 미확인 · 자료 확인{" "}
-              {data.checkedAt}
-            </p>
           </div>
           <div className="panel">
             <h2>시장 흐름과 전망</h2>
-            <p>{department.market.summary}</p>
+            <p>{studentText(department.market.summary)}</p>
             <div className="career-market-grid">
               <div>
                 <h3>살펴볼 기회</h3>
                 <ul>
                   {department.market.opportunities.map((t) => (
-                    <li key={t}>{t}</li>
+                    <li key={t}>{studentText(t)}</li>
                   ))}
                 </ul>
               </div>
@@ -105,25 +114,19 @@ export function CareerComparePage() {
                 <h3>함께 고려할 점</h3>
                 <ul>
                   {department.market.risks.map((t) => (
-                    <li key={t}>{t}</li>
+                    <li key={t}>{studentText(t)}</li>
                   ))}
                 </ul>
               </div>
             </div>
-            <p className="privacy-note">
-              산업 전망을 연결한 해석이며 이 학교 고졸 신입의 채용 규모나 취업
-              확률이 아니야.
-            </p>
+
             <References
               department={department}
               ids={department.market.sourceIds}
             />
           </div>
           <h2>연계 직무별로 더 자세히</h2>
-          <p>
-            학과가 같아도 실제 업무·필요한 준비·급여는 다를 수 있어. 역량은 학습
-            제안이며 회사별 채용 공고를 다시 확인해 줘.
-          </p>
+          <p>직무마다 어떤 일을 하고, 무엇을 준비하는지 살펴보자.</p>
           <div className="role-detail-grid">
             {department.roles.map((role) => {
               const samples = roleSalary(department, role);
@@ -132,8 +135,7 @@ export function CareerComparePage() {
                   <p className="eyebrow">{title?.department} · 연계 직무</p>
                   <h2>{role.title}</h2>
                   <h3>실제로 하는 일</h3>
-                  <p>{role.tasks}</p>
-                  <p className="privacy-note">{role.entryNotes}</p>
+                  <p>{studentText(role.tasks)}</p>
 
                   <div className="role-pay">
                     <h3>초봉 연봉 수준 · 세전</h3>
@@ -147,8 +149,7 @@ export function CareerComparePage() {
                           · 수집 공고 시작액 평균 대비
                         </p>
                         <p className="privacy-note">
-                          해당 직무와 연결되는 공고 {samples.length}건. 2026
-                          사례이며 직무 평균·미래 졸업 시점의 임금이 아니야.
+                          2026년 신입 공고 {samples.length}건 · 전국 사례
                         </p>
                         <details className="role-more">
                           <summary>채용 공고와 근무 조건 확인</summary>
@@ -179,23 +180,21 @@ export function CareerComparePage() {
                       </>
                     ) : (
                       <p>
-                        학과 전체나 다른 직무의 급여를 이 직무의 초봉으로 옮겨
-                        쓰지 않았어. 실제 신입 공고의 학력·근무시간·계약 조건을
-                        추가 확인해 줘.
+                        관심 있는 직무의 채용 공고에서 근무 조건을 살펴보자.
                       </p>
                     )}
                   </div>
                   <details className="role-more">
                     <summary>근무환경과 준비할 역량</summary>
-                    <p>{role.workEnvironment}</p>
+                    <p>{studentText(role.workEnvironment)}</p>
                     <h3>기본으로 준비할 역량</h3>
                     <ul>
                       {role.essentialSkills.map((t) => (
-                        <li key={t}>{t}</li>
+                        <li key={t}>{studentText(t)}</li>
                       ))}
                     </ul>
                     <h3>더 배워 볼 경로</h3>
-                    <p>{role.nextStep}</p>
+                    <p>{studentText(role.nextStep)}</p>
                   </details>
                   <details className="role-more">
                     <summary>영어 활용과 연습 방법</summary>
@@ -301,17 +300,22 @@ export function CareerComparePage() {
                       ))}
                     </td>
                     <td>
-                      <strong>{salarySummary(d.salary.samples)}</strong>
+                      <strong>
+                        {salarySummary(availableSamples(d.salary.samples))}
+                      </strong>
                       <small>
-                        학과 연계 공고 사례 {d.salary.samples.length}건 ·
-                        직무마다 다름
+                        학과 연계 공고 사례{" "}
+                        {availableSamples(d.salary.samples).length}건 · 직무마다
+                        다름
                       </small>
                     </td>
                     <td>
-                      {relativeStart(d.salary.annualMinManwon)}
+                      {relativeStart(
+                        salaryStart(availableSamples(d.salary.samples)),
+                      )}
                       <small>학과 공고 최저 시작액 기준</small>
                     </td>
-                    <td>{d.market.summary}</td>
+                    <td>{studentText(d.market.summary)}</td>
                     <td>
                       {d.roles[0].essentialSkills[0]}
                       <small>영어: {d.roles[0].english.use}</small>
@@ -331,16 +335,20 @@ export function CareerComparePage() {
                 <h2>{names.get(d.departmentId)?.department}</h2>
                 <p>{d.roles.map((r) => r.title).join(" · ")}</p>
                 <h3>세전 초봉 참고</h3>
-                <strong>{salarySummary(d.salary.samples)}</strong>
+                <strong>
+                  {salarySummary(availableSamples(d.salary.samples))}
+                </strong>
                 <p>
-                  {relativeStart(d.salary.annualMinManwon)} · 수집 시작액 평균
-                  대비
+                  {relativeStart(
+                    salaryStart(availableSamples(d.salary.samples)),
+                  )}{" "}
+                  · 수집 시작액 평균 대비
                 </p>
                 <small>학과 공고 최저 시작액 기준 · 직무마다 다름</small>
                 <details className="role-more mobile-comparison-more">
                   <summary>시장 전망과 영어 활용</summary>
                   <h3>시장·전망</h3>
-                  <p>{d.market.summary}</p>
+                  <p>{studentText(d.market.summary)}</p>
                   <h3>역량·영어</h3>
                   <p>{d.roles[0].essentialSkills[0]}</p>
                   <p>{d.roles[0].english.use}</p>
@@ -382,7 +390,10 @@ export function CareerComparePage() {
           해당 학과 공고의 가장 낮은 시작액, 직무 카드는 연결된 공고의 가장 낮은
           시작액을 사용해. 높은 초봉 순위나 취업 추천 점수가 아니야.
         </p>
-        <p>{data.salaryNotice}</p>
+        <p>
+          2026년 신입 채용 공고에 적힌 세전 금액이야. 지역과 근무시간,
+          상여·수당과 계약기간을 함께 살펴봐.
+        </p>
         <p>
           월급×12는 비교용이며 12개월 계약을 보장하지 않아. 일부 공고의 상한
           미확인은 전체 상한을 뜻하지 않아. 실제 수령액·연장/야간
@@ -402,7 +413,11 @@ export function CareerComparePage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {s.title} ↗
+              {s.title
+                .replace(": 진로 안내이며 취업 실적 아님", "")
+                .replace("(교육 적용연도 미표기)", "")
+                .trim()}{" "}
+              ↗
             </a>
           ))}
         </div>

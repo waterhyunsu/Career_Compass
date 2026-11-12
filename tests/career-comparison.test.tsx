@@ -5,6 +5,7 @@ import { expect, it, vi } from "vitest";
 import data from "../src/data/career-pathways.json";
 import {
   annualPay,
+  availableSamples,
   collectedBenchmark,
   salarySummary,
   roleSalary,
@@ -17,7 +18,7 @@ it("월급을 연환산하고 중복 제거한 공고 시작액만 표본평균�
   ).toEqual({ min: 2640, max: 3120 });
   const unique = new Map(
     data.departments
-      .flatMap((d) => d.salary.samples)
+      .flatMap((d) => availableSamples(d.salary.samples))
       .map((s) => [s.sourceId, s]),
   );
   const expected =
@@ -65,7 +66,7 @@ it("학교 필터·학과 선택·직무별 영어와 급여 미확인·복귀�
     ) as HTMLButtonElement;
     await act(async () => open.click());
     expect(host.textContent).toContain("CNC");
-    expect(host.textContent).toContain("직무별 급여 근거 미확인");
+    expect(host.textContent).toContain("연봉은 채용 공고에서 살펴봐");
     expect(host.textContent).toContain("영어 활용");
     expect(host.textContent).toContain("작게 연습해 보기");
     const back = [...host.querySelectorAll("button")].find((b) =>
@@ -78,4 +79,18 @@ it("학교 필터·학과 선택·직무별 영어와 급여 미확인·복귀�
     host.remove();
     scroll.mockRestore();
   }
+});
+
+it("원문을 다시 확인할 수 없는 공고는 급여와 비교 기준에서 제외한다", () => {
+  const all = data.departments.flatMap((d) =>
+    availableSamples(d.salary.samples),
+  );
+  expect(
+    all.some((s) =>
+      ["K130112609020060", "K180522609010016", "KJK4002610270001"].includes(
+        s.sourceId,
+      ),
+    ),
+  ).toBe(false);
+  expect(collectedBenchmark.count).toBe(12);
 });

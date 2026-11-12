@@ -1,3 +1,4 @@
+import { studentText } from "../lib/student-text";
 import { useState } from "react";
 import {
   ArrowUpRight,
@@ -9,6 +10,14 @@ import {
   Check,
 } from "lucide-react";
 import schools from "../data/schools.json";
+import {
+  interestQuestion,
+  schoolPrograms,
+  schoolTypeName,
+  schoolSubjects,
+  schoolQualifications,
+  schoolPathway,
+} from "../lib/school-presentation";
 import { DepartmentCareer } from "../components/DepartmentCareer";
 import type { Favorite } from "../lib/api";
 export type School = (typeof schools)[number];
@@ -81,8 +90,7 @@ export function SchoolsPage({
         <p>학교의 이름보다, 그곳에서 무엇을 배우고 싶은지 생각해 봐.</p>
       </div>
       <div className="notice">
-        2027학년도 공식 자료를 바탕으로 확인한 범위를 표시했어. 지원 자격과
-        통학은 최종 확인이 필요해. 학교 순서는 추천 순위가 아니야.
+        학교마다 배우는 과목과 입학 방식이 달라. 관심 있는 학교를 비교해 봐.
       </div>
       {!onlySaved && (
         <a className="career-compare-entry" href="#careers">
@@ -174,7 +182,7 @@ export function SchoolsPage({
             </div>
             <div className="school-body">
               <div className="school-tags">
-                <span>{s.type}</span>
+                <span>{schoolTypeName(s.id, s.type)}</span>
                 <span>
                   {s.ownership} · {s.gender}
                 </span>
@@ -185,13 +193,13 @@ export function SchoolsPage({
                 >
                   {s.maleEligibility === "불가"
                     ? "남학생 지원 불가"
-                    : "성별 조건 확인"}
+                    : "남학생 모집"}
                 </span>
               </div>
               <h2>
                 <button onClick={() => open(s)}>{s.name}</button>
               </h2>
-              <p>{s.summary}</p>
+              <p>{studentText(s.summary)}</p>
               <small className="school-address">
                 <MapPin size={13} />
                 {s.address}
@@ -333,11 +341,26 @@ export function SchoolsPage({
                       <th>{label}</th>
                       {comparison.map((id) => (
                         <td key={id}>
-                          {String(
-                            schools.find((s) => s.id === id)?.[
-                              key as keyof School
-                            ] ?? "확인 필요",
-                          )}
+                          {(() => {
+                            const school = schools.find((s) => s.id === id)!;
+                            if (key === "type")
+                              return schoolTypeName(school.id, school.type);
+                            if (key === "curriculum")
+                              return school.type === "특성화고"
+                                ? "보통교과와 학과별 전공 수업"
+                                : "여러 교과와 선택과목";
+                            if (key === "pathway")
+                              return school.type === "특성화고"
+                                ? "전공을 배우며 취업·대학 진학 탐색"
+                                : "대학 진학·취업 등 다양한 진로 탐색";
+                            if (key === "commute")
+                              return "버스 노선과 등하교 시간을 살펴보자.";
+                            if (key === "maleEligibility")
+                              return school.maleEligibility === "불가"
+                                ? "남학생 지원 불가"
+                                : "남학생 모집";
+                            return String(school[key as keyof School] ?? "");
+                          })()}
                         </td>
                       ))}
                     </tr>
@@ -364,16 +387,28 @@ export function SchoolsPage({
               <X />
             </button>
             <p className="eyebrow">
-              {detail.type} · {detail.ownership} · {detail.gender}
+              {schoolTypeName(detail.id, detail.type)} · {detail.ownership} ·{" "}
+              {detail.gender}
             </p>
             <h1>{detail.name}</h1>
-            <p>{detail.summary}</p>
-            <p className="badge">
-              2027 자료 · {detail.verification} · {detail.checkedAt}
+            <p>{studentText(detail.summary)}</p>
+            <p className="badge">2027학년도 입학 안내</p>
+            <p className="school-important">
+              지원할 때 졸업·거주 등 전형 조건을 함께 살펴봐.
+              {detail.id === "chungjuch" &&
+                " 특별전형 마감은 첨부 모집요강에 11월 20일로 적혀 있어. 홈페이지 본문의 날짜와 달라 원서 제출 전 학교에 확인해 줘."}
             </p>
-            <div className="notice">{detail.notes}</div>
             <h3>무엇을 배울까?</h3>
-            <p>{detail.curriculum}</p>
+            <p>
+              {detail.type === "특성화고"
+                ? "아래는 학교가 소개한 학과별 배움이야. 2027학년도 과목 구성은 학교 교육과정표에서 살펴보자."
+                : "여러 교과와 선택과목을 통해 관심 분야를 넓혀 가."}
+            </p>
+            {detail.type === "특성화고" && (
+              <p className="school-qualifications-note">
+                관련 자격은 학교 소개의 예시야. 자격마다 응시 조건이 있어.
+              </p>
+            )}
             {detail.departments.map((d) => (
               <div className="department-card" key={d.id}>
                 <div className="department-row">
@@ -382,9 +417,33 @@ export function SchoolsPage({
                       {d.name}
                       {d.capacity !== null ? ` · ${d.capacity}명` : ""}
                     </strong>
-                    <p>{d.subjects}</p>
-                    <small>자격증: {d.certifications}</small>
-                    <p>{d.pathway}</p>
+                    <p>{schoolSubjects(d.subjects)}</p>
+                    {schoolPrograms[d.id] && (
+                      <p className="school-program">
+                        {schoolPrograms[d.id].text}{" "}
+                        <a
+                          href={schoolPrograms[d.id].url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          교육청 자료 ↗
+                        </a>
+                      </p>
+                    )}
+                    {interestQuestion(d.id) && (
+                      <p className="interest-question">
+                        생각해 볼 질문 · {interestQuestion(d.id)}
+                      </p>
+                    )}
+                    {schoolQualifications(d.certifications) && (
+                      <small>
+                        관련 자격 예시: {schoolQualifications(d.certifications)}
+                      </small>
+                    )}
+                    {d.pathway &&
+                      !d.pathway.includes("공식 자료 확인 필요") && (
+                        <p>{schoolPathway(d.pathway)}</p>
+                      )}
                   </div>
                   <button
                     disabled={busy}
@@ -401,7 +460,11 @@ export function SchoolsPage({
               </div>
             ))}
             <h3>어떤 길이 있을까?</h3>
-            <p>{detail.pathway}</p>
+            <p>
+              {detail.type === "특성화고"
+                ? "관심 있는 전공을 배우며 취업과 대학 진학 등 여러 길을 살펴볼 수 있어."
+                : "대학 진학, 취업 등 다양한 진로를 살펴볼 수 있어."}
+            </p>
             <h3>입학 전에 확인해 봐</h3>
             <dl>
               <dt>전형</dt>
@@ -409,7 +472,7 @@ export function SchoolsPage({
               <dt>접수 기간</dt>
               <dd>{detail.applicationPeriod}</dd>
               <dt>통학</dt>
-              <dd>{detail.commute}</dd>
+              <dd>집에서 학교까지 버스 노선과 등하교 시간을 살펴보자.</dd>
             </dl>
             <h3>관심을 갖게 된 이유</h3>
             <textarea
@@ -432,13 +495,16 @@ export function SchoolsPage({
                 학교 홈페이지 ↗
               </a>
               <a href={detail.admissionsUrl} target="_blank" rel="noreferrer">
-                2027 입학 자료 ↗
+                2027 모집요강 보기 ↗
               </a>
-              {detail.sources.map((s) => (
-                <a href={s.url} key={s.url} target="_blank" rel="noreferrer">
-                  {s.title} ↗
-                </a>
-              ))}
+              <details className="school-source-details">
+                <summary>더 많은 공식 자료</summary>
+                {detail.sources.map((s) => (
+                  <a href={s.url} key={s.url} target="_blank" rel="noreferrer">
+                    {s.title} ↗
+                  </a>
+                ))}
+              </details>
             </div>
           </section>
         </div>

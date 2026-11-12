@@ -2498,3 +2498,109 @@ summary {
     padding: 26px 22px;
   }
 }
+
+.school-important {
+  border-left: 3px solid #b48b39;
+  padding: 8px 12px;
+  background: #faf5e7;
+  color: #4c4b36;
+  border-radius: 0 9px 9px 0;
+  line-height: 1.65;
+}
+.school-source-details {
+  width: 100%;
+  margin-top: 8px;
+}
+.school-source-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 0;
+}
+.school-source-details a {
+  display: block;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .school-important {
+    font-size: 14px;
+  }
+  .type-admission .type-path-grid {
+    gap: 12px;
+  }
+  .school-source-details summary {
+    min-height: 44px;
+  }
+}
+/* 긴 주 메뉴가 태블릿에서 화면 밖으로 밀리지 않도록 접습니다. */
+@media (min-width: 761px) and (max-width: 900px) {
+  .site-header {
+    position: relative;
+  }
+  .site-header nav {
+    display: none;
+  }
+  .mobile-menu {
+    display: inline-flex;
+  }
+  .site-header nav.menu-open {
+    display: flex;
+    position: absolute;
+    top: 90px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    height: auto;
+    padding: 10px 25px;
+    background: #fffefa;
+    z-index: 50;
+    box-shadow: 0 10px 20px #284e4010;
+  }
+  .site-header nav a {
+    padding: 12px 0;
+  }
+  .site-header nav a.active:after {
+    display: none;
+  }
+}
+/* 긴 학과 내용을 읽다가도 닫을 수 있도록 버튼을 유지한다. */
+.modal-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 3;
+  margin: -10px -10px 0 0;
+  min-width: 44px;
+  min-height: 44px;
+  background: #fffef9;
+  border: 1px solid #dce5da;
+}
+/* 장식용 궤도가 좁은 화면에서 문서 너비를 늘리지 않도록 제한한다. */
+.hero {
+  overflow-x: clip;
+}
+
+.interest-question {
+  background: #f0f5ed;
+  color: #315b42;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.school-qualifications-note {
+  color: #52685a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.school-program {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #415f4b;
+}
+.school-program a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

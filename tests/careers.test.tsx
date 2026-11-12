@@ -52,7 +52,7 @@ it("학과 상세에 실제 업무·세전초봉·자료시점·공고원문·�
     "졸업 후 직무·초봉 보기",
     "2026",
     "세전",
-    "실제 졸업",
+    "졸업 시점",
     "고졸",
     "고용24",
     "추가 준비",
@@ -74,7 +74,7 @@ it("급여 상한 근거가 없으면 수치를 만들어 표시하지 않으며
 
 it("일부 표본의 상한이 없으면 알려진 상한을 전체 상한처럼 단정하지 않는다", () => {
   const html = renderToStaticMarkup(
-    <DepartmentCareer departmentId="cjth-machine" />,
+    <DepartmentCareer departmentId="chungjuch-accounting" />,
   );
   expect(html).toContain("일부 공고의 상한은 미확인");
   expect(html).toContain("전체 상한은 아니야");

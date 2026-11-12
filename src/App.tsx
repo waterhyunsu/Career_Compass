@@ -315,7 +315,8 @@ export default function App() {
           )}
           <button
             className="mobile-menu icon-button"
-            aria-label="메뉴 열기"
+            aria-label={mobileMenu ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={mobileMenu}
             onClick={() => setMobileMenu(!mobileMenu)}
           >
             <Menu size={22} />

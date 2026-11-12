@@ -12,6 +12,8 @@ const sources = {
   statistics:
     "https://www.kedi.re.kr/khome/mobile2/announce/selectAnnounceForm.do?article_sq_no=36534&board_sq_no=3&currentPage=1&selectTp=0",
   school: "https://school.cbe.go.kr/chungjuch-h/MABAGBH/view/5823607",
+  admission:
+    "https://www.cbe.go.kr/news/na/ntt/selectNttInfo.do?bbsId=1158&mi=10301&nttId=1570503&nttSn=1570503",
 };
 function Source({
   href,
@@ -107,6 +109,33 @@ export function SchoolTypesPage() {
         </p>
         <Source href={sources.guide}>
           교육부 2022 개정 교육과정 총론 해설
+        </Source>
+      </section>
+      <section className="type-section type-admission">
+        <p className="eyebrow">입학 방법도 살펴보자</p>
+        <h2>학교에 들어가는 방법은?</h2>
+        <div className="type-path-grid">
+          <article>
+            <h3>충주 동지역 평준화 일반고</h3>
+            <p>
+              희망 학교를 순서대로 적고, 선발된 학생을 성적군과 지망 순위에 따라
+              배정해. 일반적인 경우 충주는 4개교까지 적어.
+            </p>
+          </article>
+          <article>
+            <h3>특성화고와 학교장전형 학교</h3>
+            <p>
+              학교나 학과별 모집요강을 보고 지원해. 충주상고·충주공고는 전형과
+              학과를 살펴보고, 중앙탑고·충원고는 학교장전형을 확인해 봐.
+            </p>
+          </article>
+        </div>
+        <p className="type-footnote">
+          전형별 지원 자격과 동시지원 등 예외가 있어. 해당 연도의 모집요강을
+          함께 보자.
+        </p>
+        <Source href={sources.admission}>
+          충북교육청 2027학년도 고입 기본계획
         </Source>
       </section>
       <section className="type-reality">
@@ -214,6 +243,20 @@ export function SchoolTypesPage() {
             <p>
               대학 진학도 가능해. 다만 학과와 학교마다 듣는 과목이 다르고,
               희망하는 대학·전형별로 준비할 조건도 다르니 미리 확인하는 게 좋아.
+            </p>
+          </details>
+          <details>
+            <summary>바리스타 자격증이 있으면 꼭 조리과에 가야 해?</summary>
+            <p>
+              아니야. 자격증을 준비하며 어떤 순간이 즐거웠는지 돌아보고, 여러
+              학과의 수업을 비교해 보자.
+            </p>
+          </details>
+          <details>
+            <summary>특성화고가 공부하기 더 쉬워?</summary>
+            <p>
+              학교마다 배우는 내용과 평가 방식이 달라. 어떤 수업이 더 쉽다고
+              정하기보다, 내가 배우고 싶은 내용과 잘 맞는 학습 방식을 살펴보자.
             </p>
           </details>
           <details>
