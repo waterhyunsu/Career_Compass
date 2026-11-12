@@ -2604,3 +2604,62 @@ summary {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* School names remain visible, so color is a second cue rather than the only cue. */
+.school-color-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #4b6155;
+}
+.school-color-legend span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.legend-cjth,
+.career-table tr.school-cjth > * {
+  background: #edf5f0;
+}
+.legend-chungjuch,
+.career-table tr.school-chungjuch > * {
+  background: #fff4e7;
+}
+.comparison-mobile-cards .school-cjth {
+  background: #edf5f0;
+  border-color: #c5dacf;
+}
+.comparison-mobile-cards .school-chungjuch {
+  background: #fff4e7;
+  border-color: #e8d1b6;
+}
+.workplace-examples {
+  margin: 24px 0;
+}
+.workplace-examples > p {
+  color: #53665b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.workplace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 12px;
+}
+.workplace-example {
+  border: 1px solid #dce5da;
+  border-radius: 12px;
+  background: #fff;
+  padding: 16px;
+}
+.workplace-example h3 {
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+.workplace-example p {
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+}

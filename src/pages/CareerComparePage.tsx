@@ -4,6 +4,8 @@ import { useState } from "react";
 import data from "../data/career-pathways.json";
 import schools from "../data/schools.json";
 import { DepartmentCareer } from "../components/DepartmentCareer";
+import { WorkplaceExamples } from "../components/WorkplaceExamples";
+import { workplaceExamples } from "../data/workplace-examples";
 import {
   annualPay,
   availableSamples,
@@ -50,7 +52,13 @@ export function CareerComparePage() {
   const rows = data.departments.filter(
     (d) =>
       (school === "all" || d.schoolId === school) &&
-      [names.get(d.departmentId)?.department, ...d.roles.map((r) => r.title)]
+      [
+        names.get(d.departmentId)?.department,
+        ...d.roles.map((r) => r.title),
+        ...(workplaceExamples[d.departmentId] ?? []).map(
+          (e) => `${e.place} ${e.work}`,
+        ),
+      ]
         .join(" ")
         .toLocaleLowerCase()
         .includes(query.trim().toLocaleLowerCase()),
@@ -98,33 +106,7 @@ export function CareerComparePage() {
               ids={department.schoolSourceIds}
             />
           </div>
-          <div className="panel">
-            <h2>시장 흐름과 전망</h2>
-            <p>{studentText(department.market.summary)}</p>
-            <div className="career-market-grid">
-              <div>
-                <h3>살펴볼 기회</h3>
-                <ul>
-                  {department.market.opportunities.map((t) => (
-                    <li key={t}>{studentText(t)}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3>함께 고려할 점</h3>
-                <ul>
-                  {department.market.risks.map((t) => (
-                    <li key={t}>{studentText(t)}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <References
-              department={department}
-              ids={department.market.sourceIds}
-            />
-          </div>
+          <WorkplaceExamples departmentId={department.departmentId} />
           <h2>연계 직무별로 더 자세히</h2>
           <p>직무마다 어떤 일을 하고, 무엇을 준비하는지 살펴보자.</p>
           <div className="role-detail-grid">
@@ -209,7 +191,10 @@ export function CareerComparePage() {
               );
             })}
           </div>
-          <DepartmentCareer departmentId={department.departmentId} />
+          <DepartmentCareer
+            departmentId={department.departmentId}
+            showWorkplaces={false}
+          />
         </>
       ) : (
         <>
@@ -265,26 +250,30 @@ export function CareerComparePage() {
             </label>
             <span>{rows.length}개 학과</span>
           </div>
+          <p className="school-color-legend">
+            <span className="legend-cjth">충주공고</span>
+            <span className="legend-chungjuch">충주상고</span> · 학교별 색으로
+            구분했어
+          </p>
           <div
             className="comparison-table-wrap"
             tabIndex={0}
-            aria-label="학과별 직무 초봉 전망 비교표"
+            aria-label="학과별 직무와 초봉 비교표"
           >
             <table className="career-table">
-              <caption>학과별 직무·초봉·전망 비교 · 2026 공고 사례</caption>
+              <caption>학과별 직무·초봉 비교 · 2026 공고 사례</caption>
               <thead>
                 <tr>
                   <th scope="col">학교·학과</th>
                   <th scope="col">연계 직무</th>
                   <th scope="col">세전 초봉 참고</th>
                   <th scope="col">수집 시작액 평균 대비</th>
-                  <th scope="col">시장·전망</th>
                   <th scope="col">역량·영어</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((d) => (
-                  <tr key={d.departmentId}>
+                  <tr className={`school-${d.schoolId}`} key={d.departmentId}>
                     <th scope="row">
                       <small>{names.get(d.departmentId)?.school}</small>
                       <button
@@ -315,7 +304,6 @@ export function CareerComparePage() {
                       )}
                       <small>학과 공고 최저 시작액 기준</small>
                     </td>
-                    <td>{studentText(d.market.summary)}</td>
                     <td>
                       {d.roles[0].essentialSkills[0]}
                       <small>영어: {d.roles[0].english.use}</small>
@@ -330,7 +318,10 @@ export function CareerComparePage() {
           </div>
           <div className="comparison-mobile-cards">
             {rows.map((d) => (
-              <article className="panel" key={d.departmentId}>
+              <article
+                className={`panel school-${d.schoolId}`}
+                key={d.departmentId}
+              >
                 <p className="eyebrow">{names.get(d.departmentId)?.school}</p>
                 <h2>{names.get(d.departmentId)?.department}</h2>
                 <p>{d.roles.map((r) => r.title).join(" · ")}</p>
@@ -346,9 +337,7 @@ export function CareerComparePage() {
                 </p>
                 <small>학과 공고 최저 시작액 기준 · 직무마다 다름</small>
                 <details className="role-more mobile-comparison-more">
-                  <summary>시장 전망과 영어 활용</summary>
-                  <h3>시장·전망</h3>
-                  <p>{studentText(d.market.summary)}</p>
+                  <summary>역량과 영어 활용</summary>
                   <h3>역량·영어</h3>
                   <p>{d.roles[0].essentialSkills[0]}</p>
                   <p>{d.roles[0].english.use}</p>

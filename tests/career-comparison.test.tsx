@@ -94,3 +94,38 @@ it("원문을 다시 확인할 수 없는 공고는 급여와 비교 기준에�
   ).toBe(false);
   expect(collectedBenchmark.count).toBe(12);
 });
+
+it("학교별 색상을 구분하고, 아홉 학과에 현실적인 일자리 예시를 표시하며 전망을 숨긴다", async () => {
+  (
+    globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
+  ).IS_REACT_ACT_ENVIRONMENT = true;
+  const scroll = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  const host = document.createElement("div");
+  document.body.append(host);
+  const root = createRoot(host);
+  try {
+    await act(async () => root.render(<CareerComparePage />));
+    expect(host.querySelectorAll("tbody tr.school-cjth")).toHaveLength(4);
+    expect(host.querySelectorAll("tbody tr.school-chungjuch")).toHaveLength(5);
+    expect(host.textContent).not.toContain("시장·전망");
+    for (const department of data.departments) {
+      const button = host.querySelector(
+        `button[data-department="${department.departmentId}"]`,
+      ) as HTMLButtonElement;
+      await act(async () => button.click());
+      expect(host.textContent).toContain("일할 수 있는 곳과 하는 일");
+      expect(
+        host.querySelectorAll(".workplace-example").length,
+      ).toBeGreaterThanOrEqual(3);
+      expect(host.textContent).not.toContain("시장 흐름과 전망");
+      const back = [...host.querySelectorAll("button")].find((b) =>
+        b.textContent?.includes("비교표로 돌아가기"),
+      )!;
+      await act(async () => back.click());
+    }
+  } finally {
+    await act(async () => root.unmount());
+    host.remove();
+    scroll.mockRestore();
+  }
+});

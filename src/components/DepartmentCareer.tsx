@@ -1,8 +1,15 @@
 import { annualPay, availableSamples, salarySummary } from "../lib/careers";
 import { studentText } from "../lib/student-text";
 import data from "../data/career-pathways.json";
+import { WorkplaceExamples } from "./WorkplaceExamples";
 const money = (n: number) => n.toLocaleString("ko-KR");
-export function DepartmentCareer({ departmentId }: { departmentId: string }) {
+export function DepartmentCareer({
+  departmentId,
+  showWorkplaces = true,
+}: {
+  departmentId: string;
+  showWorkplaces?: boolean;
+}) {
   const career = data.departments.find((d) => d.departmentId === departmentId);
   if (!career) return null;
   const samples = availableSamples(career.salary.samples);
@@ -44,10 +51,6 @@ export function DepartmentCareer({ departmentId }: { departmentId: string }) {
               {hasUnknownUpper ? "일부 상한 미확인" : "조건별 차이 있음"}
             </small>
           </div>
-          <div>
-            <span>시장 흐름</span>
-            <p>{studentText(career.market.summary)}</p>
-          </div>
         </div>
         <p className="career-overview-note">
           2026년 신입 공고 사례야. 졸업 시점의 급여 예측은 아니야.
@@ -62,6 +65,7 @@ export function DepartmentCareer({ departmentId }: { departmentId: string }) {
             {sourceLinks(career.schoolSourceIds)}
           </div>
         </details>
+        {showWorkplaces && <WorkplaceExamples departmentId={departmentId} />}
         <details className="career-section">
           <summary>연결해 볼 입문 직무</summary>
 
@@ -80,32 +84,6 @@ export function DepartmentCareer({ departmentId }: { departmentId: string }) {
             ))}
           </ul>
           <p>{studentText(career.furtherPath)}</p>
-        </details>
-        <details className="career-section">
-          <summary>시장 흐름과 고려할 점</summary>
-          <p>{studentText(career.market.summary)}</p>
-          <div className="career-market-grid">
-            <div>
-              <strong>기회</strong>
-              <ul>
-                {career.market.opportunities.map((t) => (
-                  <li key={t}>{studentText(t)}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <strong>고려할 점</strong>
-              <ul>
-                {career.market.risks.map((t) => (
-                  <li key={t}>{studentText(t)}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="source-links">
-            {sourceLinks(career.market.sourceIds)}
-          </div>
         </details>
         <details className="career-section">
           <summary>초봉 근거와 채용 조건 확인</summary>
