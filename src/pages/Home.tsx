@@ -66,6 +66,10 @@ export function Home() {
           <span className="art-caption">YOUR OWN DIRECTION</span>
         </div>
       </section>
+      <a className="career-compare-entry" href="#school-types">
+        <strong>일반고와 특성화고, 무엇을 배울까? →</strong>
+        <span>실제 수업 자료를 보며 차근차근 알아보자.</span>
+      </a>
       <section className="journey">
         <div className="section-heading">
           <div>

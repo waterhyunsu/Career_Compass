@@ -90,6 +90,12 @@ export function SchoolsPage({
           <span>9학과의 일·초봉·전망·영어 활용을 한눈에 살펴봐.</span>
         </a>
       )}
+      {!onlySaved && (
+        <a className="career-compare-entry" href="#school-types">
+          <strong>일반고와 특성화고, 무엇이 다를까? →</strong>
+          <span>실제 과목과 졸업 후 길을 먼저 살펴봐.</span>
+        </a>
+      )}
       <div className="school-guide">
         <div>
           <strong>일반고</strong>

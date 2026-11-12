@@ -14,6 +14,7 @@ import type { User } from "@supabase/supabase-js";
 import { Home } from "./pages/Home";
 import { SurveyPage } from "./pages/SurveyPage";
 import { CareerComparePage } from "./pages/CareerComparePage";
+import { SchoolTypesPage } from "./pages/SchoolTypesPage";
 import { SchoolsPage } from "./pages/SchoolsPage";
 import { AdminPage } from "./pages/AdminPage";
 import { Markdown } from "./components/Markdown";
@@ -274,6 +275,7 @@ export default function App() {
           {[
             { id: "home", label: "시작하기" },
             { id: "survey", label: "나를 알아보기" },
+            { id: "school-types", label: "학교 유형 알아보기" },
             { id: "schools", label: "학교 둘러보기" },
             { id: "careers", label: "학과·직무 비교" },
             { id: "favorites", label: "관심 모아보기" },
@@ -370,6 +372,8 @@ export default function App() {
             onFavorite={favorite}
             onlySaved={route === "favorites"}
           />
+        ) : route === "school-types" ? (
+          <SchoolTypesPage />
         ) : route === "careers" ? (
           <CareerComparePage />
         ) : route === "result" ? (
